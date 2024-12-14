@@ -1,0 +1,35 @@
+@import "../../../styles/globals.module.scss";
+
+$loginformWidth: 256px;
+
+.loginForm {
+    position: fixed;
+    border: solid 2px $brand-border;
+    width: $loginformWidth;
+    margin: 20vh calc(50% - $loginformWidth / 2);
+    border-radius: $border-radius-lg;
+    color:  $brand-secondary;
+    .header {
+        text-align: center;
+        margin-bottom: $padding;
+        background-color: $brand-bg-light;
+        border-top-left-radius: $border-radius-lg;
+        border-top-right-radius: $border-radius-lg;
+        padding: $padding-sm;
+        font-weight: bold;
+    }
+    .form {
+        padding: $padding-sm $padding;
+        > :global(.ant-input-group-wrapper) {
+            margin-bottom: $padding;
+        }
+    }
+    .footer {
+        text-align: right;
+        background-color: $brand-bg-light;
+        border-bottom-left-radius: $border-radius-lg;
+        border-bottom-right-radius: $border-radius-lg;
+        padding: $padding-sm;
+        font-weight: bold;
+    }
+}
