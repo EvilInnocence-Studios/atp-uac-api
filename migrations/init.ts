@@ -1,5 +1,5 @@
-import { IMigration } from "../../core/database";
 import { database } from "../../core/database";
+import { IMigration } from "../../core/database.d";
 import { IPermission } from "../../uac-shared/permissions/types";
 import { IRole } from "../../uac-shared/role/types";
 import { IUser } from "../../uac-shared/user/types";
