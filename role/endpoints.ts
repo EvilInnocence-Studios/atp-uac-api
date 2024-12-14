@@ -1,4 +1,4 @@
-import { del, get, patch, post } from "../../core/lib/express/wrappers";
+import { del, get, patch, post } from "../../core/express/wrappers";
 import { RoleHandlers } from "./handlers";
 
 export const RoleEndpoints = {

@@ -1,8 +1,8 @@
-import { database } from "../../core/lib/database";
-import { IMigration } from "../../core/lib/database.d";
-import { IPermission } from "../../lib/common/api/services/uac/permission/types";
-import { IRole } from "../../lib/common/api/services/uac/role/types";
-import { IUser } from "../../lib/common/api/services/uac/user/types";
+import { IMigration } from "../../core/database";
+import { database } from "../../core/database";
+import { IPermission } from "../../uac-shared/permissions/types";
+import { IRole } from "../../uac-shared/role/types";
+import { IUser } from "../../uac-shared/user/types";
 import { User } from "../user/service";
 
 const db = database();

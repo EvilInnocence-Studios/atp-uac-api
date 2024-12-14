@@ -1,4 +1,4 @@
-import { post } from "../../core/lib/express/wrappers";
+import { post } from "../../core/express/wrappers";
 import { LoginHandlers } from "./handlers";
 
 export const LoginEndpoints = {

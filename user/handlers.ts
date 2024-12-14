@@ -1,12 +1,12 @@
 import { pipeTo } from "serverless-api-boilerplate";
 import { pipe } from "ts-functional";
-import { database } from '../../core/lib/database';
-import { HandlerArgs } from '../../core/lib/express/types';
-import { getBody, getBodyParam, getParam } from "../../core/lib/express/util";
+import { database } from '../../core/database';
+import { HandlerArgs } from '../../core/express/types';
+import { getBody, getBodyParam, getParam } from "../../core/express/util";
 import { CheckPermissions } from "../permission/util";
 import { User } from "./service";
-import { IUser, NewUser, SafeUser } from "../../lib/common/api/services/uac/user/types";
-import { Query } from "../../lib/common/api/types";
+import { IUser, NewUser, SafeUser } from "../../uac-shared/user/types";
+import { Query } from "../../core-shared/express/types";
 
 const db = database();
 

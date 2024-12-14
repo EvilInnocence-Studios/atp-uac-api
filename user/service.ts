@@ -1,12 +1,12 @@
 import sha256 from 'crypto-js/sha256';
 import jwt from "jsonwebtoken";
 import { omit } from "ts-functional";
-import { IUser, SafeUser } from '../../lib/common/api/services/uac/user/types';
-import { basicCrudService, basicRelationService, twoWayRelationService } from '../../core/lib/express/service/common';
-import { loadBy, loadById } from '../../core/lib/express/util';
-import { IRole } from '../../lib/common/api/services/uac/role/types';
-import { IPermission } from '../../lib/common/api/services/uac/permission/types';
-import { salt, secret } from '../../config';
+import { salt, secret } from '../../../config';
+import { basicCrudService, basicRelationService, twoWayRelationService } from '../../core/express/service/common';
+import { loadBy, loadById } from '../../core/express/util';
+import { IPermission } from '../../uac-shared/permissions/types';
+import { IRole } from '../../uac-shared/role/types';
+import { IUser, SafeUser } from '../../uac-shared/user/types';
 
 const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
 

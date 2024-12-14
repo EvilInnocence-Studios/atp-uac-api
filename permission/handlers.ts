@@ -1,9 +1,9 @@
 import { pipeTo } from "serverless-api-boilerplate";
-import { database } from "../../core/lib/database";
-import { HandlerArgs } from "../../core/lib/express/types";
-import { getBody, getParam, getQuery } from "../../core/lib/express/util";
-import { IPermission, NewPermission } from "../../lib/common/api/services/uac/permission/types";
-import { Query } from "../../lib/common/api/types";
+import { Query } from "../../core-shared/express/types";
+import { database } from "../../core/database";
+import { HandlerArgs } from "../../core/express/types";
+import { getBody, getParam, getQuery } from "../../core/express/util";
+import { IPermission, NewPermission } from "../../uac-shared/permissions/types";
 import { Permission } from "./service";
 import { CheckPermissions } from "./util";
 

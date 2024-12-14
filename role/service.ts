@@ -1,8 +1,8 @@
-import { database } from "../../core/lib/database";
-import { basicCrudService, basicRelationService } from "../../core/lib/express/service/common";
-import { IPermission } from "../../lib/common/api/services/uac/permission/types";
-import { IRole } from "../../lib/common/api/services/uac/role/types";
-import { IUser, SafeUser } from "../../lib/common/api/services/uac/user/types";
+import { database } from "../../core/database";
+import { basicCrudService, basicRelationService } from "../../core/express/service/common";
+import { IPermission } from "../../uac-shared/permissions/types";
+import { IRole } from "../../uac-shared/role/types";
+import { IUser, SafeUser } from "../../uac-shared/user/types";
 import { User } from "../user/service";
 
 const db = database();

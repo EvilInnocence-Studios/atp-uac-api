@@ -1,7 +1,7 @@
-import { basicCrudService, basicRelationService, twoWayRelationService } from "../../core/lib/express/service/common";
-import { IPermission } from "../../lib/common/api/services/uac/permission/types";
-import { IRole } from "../../lib/common/api/services/uac/role/types";
-import { IUser, SafeUser } from "../../lib/common/api/services/uac/user/types";
+import { basicCrudService, basicRelationService, twoWayRelationService } from "../../core/express/service/common";
+import { IPermission } from "../../uac-shared/permissions/types";
+import { IRole } from "../../uac-shared/role/types";
+import { IUser, SafeUser } from "../../uac-shared/user/types";
 import { User } from "../user/service";
 
 export const Permission = {

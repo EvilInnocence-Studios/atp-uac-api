@@ -1,4 +1,4 @@
-import { del, get, patch, post } from "../../core/lib/express/wrappers";
+import { del, get, patch, post } from "../../core/express/wrappers";
 import { PermissionHandlers } from "./handlers";
 
 export const PermissionEndpoints = {

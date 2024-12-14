@@ -1,4 +1,4 @@
-import { IApiConfig } from "../endpoints";
+import { IApiConfig } from "../core/endpoints";
 import { LoginEndpoints } from "./login/endpoints";
 import { PermissionEndpoints } from "./permission/endpoints";
 import { RoleEndpoints } from "./role/endpoints";

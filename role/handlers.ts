@@ -1,12 +1,12 @@
 import { getBodyParam, pipeTo } from "serverless-api-boilerplate";
 import { pipe } from "ts-functional";
-import { HandlerArgs } from "../../core/lib/express/types";
-import { getBody, getParam, getQuery } from "../../core/lib/express/util";
-import { IPermission } from "../../lib/common/api/services/uac/permission/types";
-import { IRole, NewRole } from "../../lib/common/api/services/uac/role/types";
-import { Query } from "../../lib/common/api/types";
 import { CheckPermissions } from "../permission/util";
 import { Role } from "./service";
+import { HandlerArgs } from "../../core/express/types";
+import { IRole, NewRole } from "../../uac-shared/role/types";
+import { getBody, getParam, getQuery } from "../../core/express/util";
+import { Query } from "../../core-shared/express/types";
+import { IPermission } from "../../uac-shared/permissions/types";
 
 class RoleHandlersClass {
     @CheckPermissions("role.create")

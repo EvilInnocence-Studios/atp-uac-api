@@ -1,5 +1,5 @@
-import { database } from "../../core/lib/database";
-import { getHeader } from "../../core/lib/express/util";
+import { database } from "../../core/database";
+import { getHeader } from "../../core/express/util";
 
 const db = database();
 
