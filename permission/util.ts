@@ -1,5 +1,9 @@
+import jwt from "jsonwebtoken";
+import { intersection } from "ts-functional";
+import { secret } from "../../../config";
 import { database } from "../../core/database";
-import { getHeader } from "../../core/express/util";
+import { error403, getHeader } from "../../core/express/util";
+import { User } from "../user/service";
 
 const db = database();
 
@@ -8,13 +12,30 @@ export const CheckPermissions = (...permissions: string[]) => {
         const descriptor = args[2];
         const originalMethod = descriptor.value;
 
-        descriptor.value = function (...funcArgs: any[]) {
-            const token = getHeader('login-token')(funcArgs);
+        descriptor.value = async function (...funcArgs: any[]) {
+            const token = getHeader('authorization')(funcArgs).split(" ")[1];
+            if (!token) {
+                throw error403;
+            }
+            console.log(token);
+
+            const userId:number = (jwt.verify(token, secret) as jwt.JwtPayload).userId;
+            if(!userId) {
+                throw error403;
+            }
+            console.log(userId);
+
+            // TODO: Cache this call for a limited time
+            const userPermissions = await User.permissions.get(userId);
+            if(!userPermissions) {
+                throw error403;
+            }
+            console.log(userPermissions);
 
             // Perform the permission logic
-            const hasPermission = true; // Replace with real logic
+            const hasPermission = intersection(permissions, userPermissions.map(p => p.name)).length > 0;
             if (!hasPermission) {
-                throw new Error("Permission denied");
+                throw error403;
             }
 
             // Call the original method if permission is granted

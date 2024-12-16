@@ -10,7 +10,7 @@ export const Login = {
             if(User.hashPassword(password) === user.passwordHash) {
                 resolve({
                     user: User.makeSafe(user),
-                    loginToken: jwt.sign(`${user.id}`, secret),
+                    loginToken: jwt.sign({userId: user.id}, secret),
                 });
             } else {
                 fail("Invalid credentials");
