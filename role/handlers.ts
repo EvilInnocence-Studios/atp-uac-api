@@ -1,12 +1,12 @@
 import { getBodyParam, pipeTo } from "serverless-api-boilerplate";
 import { pipe } from "ts-functional";
+import { Query } from "../../core-shared/express/types";
+import { HandlerArgs } from "../../core/express/types";
+import { getBody, getParam, getQuery } from "../../core/express/util";
+import { IPermission } from "../../uac-shared/permissions/types";
+import { IRole, NewRole } from "../../uac-shared/role/types";
 import { CheckPermissions } from "../permission/util";
 import { Role } from "./service";
-import { HandlerArgs } from "../../core/express/types";
-import { IRole, NewRole } from "../../uac-shared/role/types";
-import { getBody, getParam, getQuery } from "../../core/express/util";
-import { Query } from "../../core-shared/express/types";
-import { IPermission } from "../../uac-shared/permissions/types";
 
 class RoleHandlersClass {
     @CheckPermissions("role.create")
@@ -26,12 +26,12 @@ class RoleHandlersClass {
 
     @CheckPermissions("role.update")
     public update(...args:HandlerArgs<Partial<IRole>>):Promise<IRole> {
-        return pipeTo(Role.update, getBody<Partial<IRole>>)(args);
+        return pipeTo(Role.update, getParam("roleId"), getBody<Partial<IRole>>)(args);
     }
 
     @CheckPermissions("role.delete")
     public remove(...args:HandlerArgs<undefined>):Promise<any> {
-        return pipeTo(Role.remove, pipe(getParam("roleId"), parseInt))(args);
+        return pipeTo(Role.remove, getParam("roleId"))(args);
     }
 
     @CheckPermissions("role.view", "permission.view")
