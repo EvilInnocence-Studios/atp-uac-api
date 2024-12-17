@@ -8,7 +8,7 @@ import { User } from "../user/service";
 const db = database();
 
 const users:IUser[] = [
-    {id: 1, userName: "admin", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true},
+    {id: 1, userName: "admin", email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true},
 ];
 
 const roles:IRole[] = [
@@ -62,8 +62,9 @@ export const init:IMigration = {
         // Users table
         .createTable("users", t => {
             t.increments().unsigned();
-            t.string( "userName",    255).notNullable().unique();
-            t.string( "passwordHash", 64).notNullable();
+            t.string( "userName",      255).notNullable().unique();
+            t.string( "email",         255).notNullable().unique();
+            t.string( "passwordHash",   64).notNullable();
             t.boolean("mustUpdatePassword").notNullable();
         })
         .createTable("roles", t => {
