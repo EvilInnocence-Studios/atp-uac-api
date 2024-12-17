@@ -2,10 +2,11 @@ import { pipeTo } from "serverless-api-boilerplate";
 import { Query } from "../../core-shared/express/types";
 import { database } from "../../core/database";
 import { HandlerArgs } from "../../core/express/types";
-import { getBody, getParam, getQuery } from "../../core/express/util";
+import { getBody, getBodyParam, getParam, getQuery } from "../../core/express/util";
 import { IPermission, NewPermission } from "../../uac-shared/permissions/types";
 import { Permission } from "./service";
 import { CheckPermissions } from "./util";
+import { IRole } from "../../uac-shared/role/types";
 
 const db = database();
 
@@ -33,6 +34,21 @@ class PermissionHandlerClass {
     @CheckPermissions("permission.delete")
     public remove (...args:HandlerArgs<undefined>):Promise<null> {
         return pipeTo(Permission.remove, getParam("permissionId"))(args);
+    }
+
+    @CheckPermissions("permission.update")
+    public searchRoles (...args:HandlerArgs<Query>):Promise<IRole[]> {
+        return pipeTo(Permission.roles.get, getParam("permissionId"))(args);
+    }
+
+    @CheckPermissions("permission.update")
+    public addRole (...args:HandlerArgs<number>):Promise<any> {
+        return pipeTo(Permission.roles.add, getParam("permissionId"), getBodyParam("roleId"))(args);
+    }
+
+    @CheckPermissions("permission.update")
+    public removeRole (...args:HandlerArgs<undefined>):Promise<any> {
+        return pipeTo(Permission.roles.remove, getParam("permissionId"), getParam("roleId"))(args);
     }
 }
 

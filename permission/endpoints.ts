@@ -8,7 +8,14 @@ export const PermissionEndpoints = {
         ":permissionId": {
             GET: get(PermissionHandlers.get),
             PATCH: patch(PermissionHandlers.update),
-            DELETE: del(PermissionHandlers.remove), 
+            DELETE: del(PermissionHandlers.remove),
+            role: {
+                GET: get(PermissionHandlers.searchRoles),
+                POST: post(PermissionHandlers.addRole),
+                ":roleId": {
+                    DELETE: del(PermissionHandlers.removeRole),
+                },
+            }
         },
     },
 }
