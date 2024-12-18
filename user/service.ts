@@ -6,12 +6,19 @@ import { basicCrudService, basicRelationService, twoWayRelationService } from '.
 import { loadBy, loadById } from '../../core/express/util';
 import { IPermission } from '../../uac-shared/permissions/types';
 import { IRole } from '../../uac-shared/role/types';
-import { IUser, SafeUser } from '../../uac-shared/user/types';
+import { IUser, NewUser, SafeUser, UserUpdate } from '../../uac-shared/user/types';
 
 const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
+const removePassword = omit<Partial<UserUpdate>, "password">("password");
+
+// TODO: Figure out the type for this
+//const hashUserPassword = (user:NewUser | UserUpdate):Partial<IUser> => user.password
+const hashUserPassword = (user:any):any => user.password
+    ? {...removePassword(user), passwordHash: sha256(salt + user.password).toString() }
+    : removePassword(user);
 
 export const User = {
-    ...basicCrudService<IUser, SafeUser>("users", "userName", makeSafe),
+    ...basicCrudService<IUser, NewUser, UserUpdate, SafeUser>("users", "userName", makeSafe, hashUserPassword, hashUserPassword),
     loadUnsafe:       loadById<IUser>("users"),
     loadUnsafeByName: loadBy<IUser>("userName", "users"),
 
