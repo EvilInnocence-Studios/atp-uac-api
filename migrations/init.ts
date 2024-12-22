@@ -38,6 +38,11 @@ const permissions:IPermission[] = [
     {id: 18, name: "product.update",    description: "Can update products"   },
     {id: 19, name: "product.create",    description: "Can create products"   },
     {id: 20, name: "product.delete",    description: "Can delete products"   },
+
+    {id: 21, name: "media.view",        description: "Can view media"        },
+    {id: 22, name: "media.update",      description: "Can update media"      },
+    {id: 23, name: "media.create",      description: "Can create media"      },
+    {id: 24, name: "media.delete",      description: "Can delete media"      },
 ];
 
 const rolePermissions = [
@@ -61,6 +66,10 @@ const rolePermissions = [
     {roleId: 1, permissionId: 18},
     {roleId: 1, permissionId: 19},
     {roleId: 1, permissionId: 20},
+    {roleId: 1, permissionId: 21},
+    {roleId: 1, permissionId: 22},
+    {roleId: 1, permissionId: 23},
+    {roleId: 1, permissionId: 24},
 ];
 
 const userRoles = [
