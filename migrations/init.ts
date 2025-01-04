@@ -8,11 +8,13 @@ import { User } from "../user/service";
 const db = database();
 
 const users:IUser[] = [
-    {id: 1, userName: "admin", email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true},
+    {id: 1, userName: "admin",  email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true },
+    {id: 2, userName: "public", email: "",                  passwordHash: "",                         mustUpdatePassword: false},
 ];
 
 const roles:IRole[] = [
     {id: 1, name: "SuperUser", description: "SuperUser role"},
+    {id: 2, name: "Public",    description: "Non-logged in user"},
 ];
 
 const permissions:IPermission[] = [
@@ -51,6 +53,7 @@ const permissions:IPermission[] = [
 ];
 
 const rolePermissions = [
+    // Super user gets all permissions
     {roleId: 1, permissionId:  1},
     {roleId: 1, permissionId:  2},
     {roleId: 1, permissionId:  3},
@@ -79,10 +82,18 @@ const rolePermissions = [
     {roleId: 1, permissionId: 26},
     {roleId: 1, permissionId: 27},
     {roleId: 1, permissionId: 28},
+
+    // Public user gets only public view permissions
+    {roleId: 2, permissionId:  3},
+    {roleId: 2, permissionId: 13},
+    {roleId: 2, permissionId: 17},
+    {roleId: 2, permissionId: 21},
+    {roleId: 2, permissionId: 25},
 ];
 
 const userRoles = [
     {userId: 1, roleId: 1},
+    {userId: 2, roleId: 2},
 ];
 
 export const init:IMigration = {

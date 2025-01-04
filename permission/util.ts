@@ -14,14 +14,19 @@ export const CheckPermissions = (...permissions: string[]) => {
         const originalMethod = descriptor.value;
 
         descriptor.value = async function (...funcArgs: any[]) {
+            let userId:number | null = null;
             // Get the login token from the request headers
             const token = getHeader('authorization')(funcArgs).split(" ")[1];
             if (!token) {
-                throw error403;
+                // If no token is found, load the public user
+                const publicUser = await memoizePromise(async () => User.loadByName("public"), {})();
+                userId = publicUser.id;
+            } else {
+                // Get the user id from the login token
+                userId = (jwt.verify(token, secret) as jwt.JwtPayload).userId;
             }
 
-            // Get the user id from the login token
-            const userId:number = (jwt.verify(token, secret) as jwt.JwtPayload).userId;
+            // If no user id is found, throw a 403 error
             if(!userId) {
                 throw error403;
             }
