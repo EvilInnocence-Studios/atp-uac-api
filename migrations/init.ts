@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { database } from "../../core/database";
 import { IMigration } from "../../core/database.d";
 import { IPermission } from "../../uac-shared/permissions/types";
@@ -7,14 +8,17 @@ import { User } from "../user/service";
 
 const db = database();
 
+const userBlanks = {firstName: "", lastName: "", prefix: "", suffix: "", createdAt: dayjs().toISOString()};
 const users:IUser[] = [
-    {id: 1, userName: "admin",  email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true },
-    {id: 2, userName: "public", email: "",                  passwordHash: "",                         mustUpdatePassword: false},
+    {id: 1, userName: "admin",  email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true, ...userBlanks},
+    {id: 2, userName: "public", email: "",                  passwordHash: "",                         mustUpdatePassword: false, ...userBlanks},
 ];
 
 const roles:IRole[] = [
-    {id: 1, name: "SuperUser", description: "SuperUser role"},
+    {id: 1, name: "SuperUser", description: "SuperUser role"    },
     {id: 2, name: "Public",    description: "Non-logged in user"},
+    {id: 3, name: "Customer",  description: "Store customer"    },
+    {id: 4, name: "BSP",       description: "BSP subscriber"    },
 ];
 
 const permissions:IPermission[] = [
@@ -89,6 +93,14 @@ const rolePermissions = [
     {roleId: 2, permissionId: 17},
     {roleId: 2, permissionId: 21},
     {roleId: 2, permissionId: 25},
+
+    // Customer gets only customer view permissions
+    {roleId: 3, permissionId:  3},
+    {roleId: 3, permissionId: 13},
+    {roleId: 3, permissionId: 17},
+    {roleId: 3, permissionId: 21},
+    {roleId: 3, permissionId: 25},
+    // TODO: Need to add order and account permissions
 ];
 
 const userRoles = [
@@ -111,8 +123,13 @@ export const init:IMigration = {
             t.increments().unsigned();
             t.string( "userName",      255).notNullable().unique();
             t.string( "email",         255).notNullable().unique();
+            t.string("prefix"             ).notNullable().defaultTo("");
+            t.string("firstName"          ).notNullable().defaultTo("");
+            t.string("lastName"           ).notNullable().defaultTo("");
+            t.string("suffix"             ).notNullable().defaultTo("");
             t.string( "passwordHash",   64).notNullable();
             t.boolean("mustUpdatePassword").notNullable();
+            t.dateTime("createdAt"        ).notNullable().defaultTo(db.fn.now());
         })
         .createTable("roles", t => {
             t.increments().unsigned();
@@ -133,15 +150,16 @@ export const init:IMigration = {
             t.integer("roleId").unsigned().notNullable().references("id").inTable("roles").onDelete("CASCADE");
             t.integer("userId").unsigned().notNullable().references("id").inTable("users").onDelete("CASCADE");
             t.unique(["roleId", "userId"]);
-        })
-    .then(() => Promise.all([
+        }),
+    priority: 0,
+    initData: () => Promise.all([
         db.insert(            users).into("users"          ),
         db.insert(            roles).into("roles"          ),
         db.insert(      permissions).into("permissions"    ),
         db.insert(  rolePermissions).into("rolePermissions"),
         db.insert(        userRoles).into("userRoles"      ),
-        db.raw("ALTER SEQUENCE users_id_seq RESTART WITH 2"),
-        db.raw("ALTER SEQUENCE roles_id_seq RESTART WITH 2"),
-        db.raw("ALTER SEQUENCE permissions_id_seq RESTART WITH 13"),
-    ])),
+        db.raw("ALTER SEQUENCE users_id_seq RESTART WITH 3"),
+        db.raw("ALTER SEQUENCE roles_id_seq RESTART WITH 5"),
+        db.raw("ALTER SEQUENCE permissions_id_seq RESTART WITH 29"),
+    ]),
 }

@@ -5,6 +5,15 @@ export const UserEndpoints = {
     user: {
         GET: get(UserHandlers.search),
         POST: post(UserHandlers.create),
+        forgotPassword: {
+            POST: post(UserHandlers.forgotPassword),
+        },
+        resetPassword: {
+            POST: post(UserHandlers.resetPassword),
+        },
+        forgotUserName: {
+            POST: post(UserHandlers.forgotUserName),
+        },
         ":userId": {
             GET: get(UserHandlers.get),
             PATCH: patch(UserHandlers.update),

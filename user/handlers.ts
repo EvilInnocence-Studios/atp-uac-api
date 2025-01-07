@@ -56,6 +56,18 @@ class UserHandlerClass  {
     public getPermissions (...args:HandlerArgs<Query>): Promise<any[]> {
         return pipeTo(User.permissions.get, pipe(getParam("userId"), parseInt))(args);
     }
+
+    public forgotPassword(...args:HandlerArgs<Query>):Promise<any> {
+        return pipeTo(User.forgotPassword, getBodyParam("userName"))(args);
+    }
+
+    public resetPassword(...args:HandlerArgs<Query>):Promise<any> {
+        return pipeTo(User.resetPassword, getBodyParam("token"), getBodyParam("password"))(args);
+    }
+
+    public forgotUserName(...args:HandlerArgs<Query>):Promise<any> {
+        return pipeTo(User.forgotUserName, getBodyParam("email"))(args);
+    }
 }
 
 export const UserHandlers = new UserHandlerClass();

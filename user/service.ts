@@ -1,12 +1,17 @@
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import sha256 from 'crypto-js/sha256';
 import jwt from "jsonwebtoken";
 import { omit } from "ts-functional";
-import { salt, secret } from '../../../config';
+import { getAppConfig, salt, secret } from '../../../config';
 import { basicCrudService, basicRelationService, twoWayRelationService } from '../../core/express/service/common';
 import { loadBy, loadById } from '../../core/express/util';
+import { render } from "../../core/render";
 import { IPermission } from '../../uac-shared/permissions/types';
 import { IRole } from '../../uac-shared/role/types';
 import { IUser, NewUser, SafeUser, UserUpdate } from '../../uac-shared/user/types';
+import { ForgotPassword } from "../components/forgotPassword";
+import { ForgotUsername } from "../components/forgotUsername";
+import { sendEmail } from "../../core/sendEmail";
 
 const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
 const removePassword = omit<Partial<UserUpdate>, "password">("password");
@@ -34,4 +39,33 @@ export const User = {
 
     makeSafe: (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser,
     hashPassword: (str:string) => sha256(salt + str).toString(),
+
+    forgotPassword: async (userName:string):Promise<any> => {
+        // Generate a key for the reset password link
+        const token = jwt.sign({userName}, secret, {expiresIn: "1h"});
+
+        // Send an email with the link via AWS SES
+        const html = render(ForgotPassword, {userName, token});
+
+        const user = await User.loadBy("userName")(userName);
+
+        sendEmail(getAppConfig().emailTemplates.forgotPassword.subject, html, [user.email]);
+    },
+
+    forgotUserName: async (email:string):Promise<any> => {
+        const user = await User.loadBy("email")(email);
+    
+        if(!user) {
+            return;
+        }
+
+        // Get the forgot username template
+        const html = render(ForgotUsername,  {email, userName: user.userName});
+        sendEmail(getAppConfig().emailTemplates.forgotUserName.subject, html, [email]);
+
+    },
+
+    resetPassword: async (token:string, password:string):Promise<any> => {
+       // TODO: Implement
+    }
 };
