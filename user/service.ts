@@ -22,8 +22,13 @@ const hashUserPassword = (user:any):any => user.password
     ? {...removePassword(user), passwordHash: sha256(salt + user.password).toString() }
     : removePassword(user);
 
+const assignDefaultRole = async (user:IUser) => {
+    const roleId = getAppConfig().defaultUserRoleId;
+    await User.roles.add(user.id, roleId);
+}
+
 export const User = {
-    ...basicCrudService<IUser, NewUser, UserUpdate, SafeUser>("users", "userName", makeSafe, hashUserPassword, hashUserPassword),
+    ...basicCrudService<IUser, NewUser, UserUpdate, SafeUser>("users", "userName", makeSafe, hashUserPassword, hashUserPassword, assignDefaultRole),
     loadUnsafe:       loadById<IUser>("users"),
     loadUnsafeByName: loadBy<IUser>("userName", "users"),
 
