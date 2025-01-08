@@ -54,6 +54,16 @@ const permissions:IPermission[] = [
     {id: 26, name: "synonym.update",    description: "Can update synonyms"   },
     {id: 27, name: "synonym.create",    description: "Can create synonyms"   },
     {id: 28, name: "synonym.delete",    description: "Can delete synonyms"   },
+
+    {id: 29, name: "banner.view",       description: "Can view banners"      },
+    {id: 30, name: "banner.update",     description: "Can update banners"    },
+    {id: 31, name: "banner.create",     description: "Can create banners"    },
+    {id: 32, name: "banner.delete",     description: "Can delete banners"    },
+
+    {id: 33, name: "order.view",        description: "Can view orders"       },
+    {id: 34, name: "order.update",      description: "Can update orders"     },
+    {id: 35, name: "order.create",      description: "Can create orders"     },
+    {id: 36, name: "order.delete",      description: "Can delete orders"     },
 ];
 
 const rolePermissions = [
@@ -86,6 +96,14 @@ const rolePermissions = [
     {roleId: 1, permissionId: 26},
     {roleId: 1, permissionId: 27},
     {roleId: 1, permissionId: 28},
+    {roleId: 1, permissionId: 29},
+    {roleId: 1, permissionId: 30},
+    {roleId: 1, permissionId: 31},
+    {roleId: 1, permissionId: 32},
+    {roleId: 1, permissionId: 33},
+    {roleId: 1, permissionId: 34},
+    {roleId: 1, permissionId: 35},
+    {roleId: 1, permissionId: 36},
 
     // Public user gets only public view permissions
     {roleId: 2, permissionId:  3},
@@ -100,7 +118,11 @@ const rolePermissions = [
     {roleId: 3, permissionId: 17},
     {roleId: 3, permissionId: 21},
     {roleId: 3, permissionId: 25},
-    // TODO: Need to add order and account permissions
+    {roleId: 3, permissionId: 33},
+    {roleId: 3, permissionId: 34},
+    {roleId: 3, permissionId: 35},
+    {roleId: 3, permissionId: 36},
+    // TODO: Need to add account permissions
 ];
 
 const userRoles = [
