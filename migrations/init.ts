@@ -111,6 +111,7 @@ const rolePermissions = [
     {roleId: 2, permissionId: 17},
     {roleId: 2, permissionId: 21},
     {roleId: 2, permissionId: 25},
+    {roleId: 2, permissionId: 29},
 
     // Customer gets only customer view permissions
     {roleId: 3, permissionId:  3},
@@ -118,6 +119,7 @@ const rolePermissions = [
     {roleId: 3, permissionId: 17},
     {roleId: 3, permissionId: 21},
     {roleId: 3, permissionId: 25},
+    {roleId: 3, permissionId: 29},
     {roleId: 3, permissionId: 33},
     {roleId: 3, permissionId: 34},
     {roleId: 3, permissionId: 35},
