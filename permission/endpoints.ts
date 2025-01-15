@@ -5,6 +5,9 @@ export const PermissionEndpoints = {
     permission: {
         GET: get(PermissionHandlers.search),
         POST: post(PermissionHandlers.create),
+        default: {
+            GET: get(PermissionHandlers.default),
+        },
         ":permissionId": {
             GET: get(PermissionHandlers.get),
             PATCH: patch(PermissionHandlers.update),

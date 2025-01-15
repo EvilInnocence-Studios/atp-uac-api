@@ -7,6 +7,7 @@ import { IPermission, NewPermission } from "../../uac-shared/permissions/types";
 import { Permission } from "./service";
 import { CheckPermissions } from "./util";
 import { IRole } from "../../uac-shared/role/types";
+import { Role } from "../role/service";
 
 const db = database();
 
@@ -34,6 +35,11 @@ class PermissionHandlerClass {
     @CheckPermissions("permission.delete")
     public remove (...args:HandlerArgs<undefined>):Promise<null> {
         return pipeTo(Permission.remove, getParam("permissionId"))(args);
+    }
+
+    public async default(...args:HandlerArgs<Query>):Promise<IPermission[]> {
+        const publicRole = await Role.loadByName("Public");
+        return Role.permissions.get(publicRole.id);
     }
 
     @CheckPermissions("permission.update")

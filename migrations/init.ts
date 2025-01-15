@@ -22,48 +22,50 @@ const roles:IRole[] = [
 ];
 
 const permissions:IPermission[] = [
-    {id:  1, name: "user.view",         description: "Can view users"        },
-    {id:  2, name: "user.update",       description: "Can update users"      },
-    {id:  3, name: "user.create",       description: "Can create users"      },
-    {id:  4, name: "user.delete",       description: "Can delete users"      },
-    {id:  5, name: "role.view",         description: "Can view roles"        },
-    {id:  6, name: "role.update",       description: "Can update roles"      },
-    {id:  7, name: "role.create",       description: "Can create roles"      },
-    {id:  8, name: "role.delete",       description: "Can delete roles"      },
-    {id:  9, name: "permission.view",   description: "Can view permissions"  },
-    {id: 10, name: "permission.update", description: "Can update permissions"},
-    {id: 11, name: "permission.create", description: "Can create permissions"},
-    {id: 12, name: "permission.delete", description: "Can delete permissions"},
+    {id:  1, name: "user.view",            description: "Can view users"        },
+    {id:  2, name: "user.update",          description: "Can update users"      },
+    {id:  3, name: "user.create",          description: "Can create users"      },
+    {id:  4, name: "user.delete",          description: "Can delete users"      },
+    {id:  5, name: "role.view",            description: "Can view roles"        },
+    {id:  6, name: "role.update",          description: "Can update roles"      },
+    {id:  7, name: "role.create",          description: "Can create roles"      },
+    {id:  8, name: "role.delete",          description: "Can delete roles"      },
+    {id:  9, name: "permission.view",      description: "Can view permissions"  },
+    {id: 10, name: "permission.update",    description: "Can update permissions"},
+    {id: 11, name: "permission.create",    description: "Can create permissions"},
+    {id: 12, name: "permission.delete",    description: "Can delete permissions"},
 
-    {id: 13, name: "tag.view",          description: "Can view tags"         },
-    {id: 14, name: "tag.update",        description: "Can update tags"       },
-    {id: 15, name: "tag.create",        description: "Can create tags"       },
-    {id: 16, name: "tag.delete",        description: "Can delete tags"       },
+    {id: 13, name: "tag.view",             description: "Can view tags"         },
+    {id: 14, name: "tag.update",           description: "Can update tags"       },
+    {id: 15, name: "tag.create",           description: "Can create tags"       },
+    {id: 16, name: "tag.delete",           description: "Can delete tags"       },
 
-    {id: 17, name: "product.view",      description: "Can view products"     },
-    {id: 18, name: "product.update",    description: "Can update products"   },
-    {id: 19, name: "product.create",    description: "Can create products"   },
-    {id: 20, name: "product.delete",    description: "Can delete products"   },
+    {id: 17, name: "product.view",         description: "Can view products"     },
+    {id: 18, name: "product.update",       description: "Can update products"   },
+    {id: 19, name: "product.create",       description: "Can create products"   },
+    {id: 20, name: "product.delete",       description: "Can delete products"   },
 
-    {id: 21, name: "media.view",        description: "Can view media"        },
-    {id: 22, name: "media.update",      description: "Can update media"      },
-    {id: 23, name: "media.create",      description: "Can create media"      },
-    {id: 24, name: "media.delete",      description: "Can delete media"      },
+    {id: 21, name: "media.view",           description: "Can view media"        },
+    {id: 22, name: "media.update",         description: "Can update media"      },
+    {id: 23, name: "media.create",         description: "Can create media"      },
+    {id: 24, name: "media.delete",         description: "Can delete media"      },
 
-    {id: 25, name: "synonym.view",      description: "Can view synonyms"     },
-    {id: 26, name: "synonym.update",    description: "Can update synonyms"   },
-    {id: 27, name: "synonym.create",    description: "Can create synonyms"   },
-    {id: 28, name: "synonym.delete",    description: "Can delete synonyms"   },
+    {id: 25, name: "synonym.view",         description: "Can view synonyms"     },
+    {id: 26, name: "synonym.update",       description: "Can update synonyms"   },
+    {id: 27, name: "synonym.create",       description: "Can create synonyms"   },
+    {id: 28, name: "synonym.delete",       description: "Can delete synonyms"   },
 
-    {id: 29, name: "banner.view",       description: "Can view banners"      },
-    {id: 30, name: "banner.update",     description: "Can update banners"    },
-    {id: 31, name: "banner.create",     description: "Can create banners"    },
-    {id: 32, name: "banner.delete",     description: "Can delete banners"    },
+    {id: 29, name: "banner.view",          description: "Can view banners"      },
+    {id: 30, name: "banner.update",        description: "Can update banners"    },
+    {id: 31, name: "banner.create",        description: "Can create banners"    },
+    {id: 32, name: "banner.delete",        description: "Can delete banners"    },
 
-    {id: 33, name: "order.view",        description: "Can view orders"       },
-    {id: 34, name: "order.update",      description: "Can update orders"     },
-    {id: 35, name: "order.create",      description: "Can create orders"     },
-    {id: 36, name: "order.delete",      description: "Can delete orders"     },
+    {id: 33, name: "order.view",           description: "Can view orders"       },
+    {id: 34, name: "order.update",         description: "Can update orders"     },
+    {id: 35, name: "order.create",         description: "Can create orders"     },
+    {id: 36, name: "order.delete",         description: "Can delete orders"     },
+
+    {id: 37, name: "product.subscription", description: "Is a subscriber"},
 ];
 
 const rolePermissions = [
@@ -125,6 +127,9 @@ const rolePermissions = [
     {roleId: 3, permissionId: 35},
     {roleId: 3, permissionId: 36},
     // TODO: Need to add account permissions
+
+    // BSP gets BSP view permissions
+    {roleId: 4, permissionId:  37},
 ];
 
 const userRoles = [
@@ -182,8 +187,8 @@ export const init:IMigration = {
         db.insert(      permissions).into("permissions"    ),
         db.insert(  rolePermissions).into("rolePermissions"),
         db.insert(        userRoles).into("userRoles"      ),
-        db.raw("ALTER SEQUENCE users_id_seq RESTART WITH 3"),
-        db.raw("ALTER SEQUENCE roles_id_seq RESTART WITH 5"),
-        db.raw("ALTER SEQUENCE permissions_id_seq RESTART WITH 29"),
+        db.raw("ALTER SEQUENCE users_id_seq RESTART WITH 10"),
+        db.raw("ALTER SEQUENCE roles_id_seq RESTART WITH 10"),
+        db.raw("ALTER SEQUENCE permissions_id_seq RESTART WITH 100"),
     ]),
 }
