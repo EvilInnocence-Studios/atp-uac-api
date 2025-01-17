@@ -1,4 +1,3 @@
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import sha256 from 'crypto-js/sha256';
 import jwt from "jsonwebtoken";
 import { omit } from "ts-functional";
@@ -6,12 +5,13 @@ import { getAppConfig, salt, secret } from '../../../config';
 import { basicCrudService, basicRelationService, twoWayRelationService } from '../../core/express/service/common';
 import { loadBy, loadById } from '../../core/express/util';
 import { render } from "../../core/render";
+import { sendEmail } from "../../core/sendEmail";
+import { IProduct } from "../../store-shared/product/types";
 import { IPermission } from '../../uac-shared/permissions/types';
 import { IRole } from '../../uac-shared/role/types';
 import { IUser, NewUser, SafeUser, UserUpdate } from '../../uac-shared/user/types';
 import { ForgotPassword } from "../components/forgotPassword";
 import { ForgotUsername } from "../components/forgotUsername";
-import { sendEmail } from "../../core/sendEmail";
 
 const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
 const removePassword = omit<Partial<UserUpdate>, "password">("password");
@@ -34,6 +34,7 @@ export const User = {
 
     roles: basicRelationService<IRole>("userRoles", "userId", "roles", "roleId"),
     permissions: twoWayRelationService<IPermission>("userId", "roleId", "permissionId", "userRoles", "rolePermissions", "permissions"),
+    wishlists: basicRelationService<IProduct>("wishlists", "userId", "products", "productId"),
 
     getLoggedInUser: (token:string):number | null => {
         console.log(token);

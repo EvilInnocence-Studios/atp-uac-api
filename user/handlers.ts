@@ -28,7 +28,7 @@ class UserHandlerClass  {
 
     @CheckPermissions("user.view")
     public get (...args:HandlerArgs<Query>):Promise<SafeUser> {
-        return pipeTo(User.loadById, getParam("userID"))(args);
+        return pipeTo(User.loadById, getParam("userId"))(args);
     }
 
     @CheckPermissions("user.delete")
@@ -55,6 +55,21 @@ class UserHandlerClass  {
     @CheckPermissions("user.view", "permission.view")
     public getPermissions (...args:HandlerArgs<Query>): Promise<any[]> {
         return pipeTo(User.permissions.get, pipe(getParam("userId"), parseInt))(args);
+    }
+
+    @CheckPermissions("user.view")
+    public getWishlists (...args:HandlerArgs<Query>): Promise<any[]> {
+        return pipeTo(User.wishlists.get, pipe(getParam("userId"), parseInt))(args);
+    }
+
+    @CheckPermissions("user.update")
+    public addToWishlist (...args:HandlerArgs<Partial<IUser>>): Promise<any> {
+        return pipeTo(User.wishlists.add, pipe(getParam("userId"), parseInt), pipe(getBodyParam("productId"), parseInt))(args);
+    }
+
+    @CheckPermissions("user.update")
+    public removeFromWishlist (...args:HandlerArgs<undefined>): Promise<any> {
+        return pipeTo(User.wishlists.remove, pipe(getParam("userId"), parseInt), pipe(getParam("productId"), parseInt))(args);
     }
 
     public forgotPassword(...args:HandlerArgs<Query>):Promise<any> {

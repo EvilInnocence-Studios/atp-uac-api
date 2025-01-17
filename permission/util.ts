@@ -4,7 +4,6 @@ import { secret } from "../../../config";
 import { database } from "../../core/database";
 import { error403, getHeader, getParam } from "../../core/express/util";
 import { User } from "../user/service";
-import { IPermission } from "../../uac-shared/permissions/types";
 
 const db = database();
 
