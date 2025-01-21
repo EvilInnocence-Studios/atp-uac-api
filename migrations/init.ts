@@ -65,7 +65,9 @@ const permissions:IPermission[] = [
     {id: 35, name: "order.create",         description: "Can create orders"     },
     {id: 36, name: "order.delete",         description: "Can delete orders"     },
 
-    {id: 37, name: "product.subscription", description: "Is a subscriber"},
+    {id: 37, name: "product.subscription", description: "Is a subscriber"       },
+
+    {id: 38, name: "order.purchase",       description: "Can purchase an order" },
 ];
 
 const rolePermissions = [
@@ -126,6 +128,7 @@ const rolePermissions = [
     {roleId: 3, permissionId: 34},
     {roleId: 3, permissionId: 35},
     {roleId: 3, permissionId: 36},
+    {roleId: 3, permissionId: 38},
     // TODO: Need to add account permissions
 
     // BSP gets BSP view permissions

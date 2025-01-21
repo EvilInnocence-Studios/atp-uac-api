@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { intersection, memoizePromise } from "ts-functional";
 import { secret } from "../../../config";
 import { database } from "../../core/database";
-import { error403, getHeader, getParam } from "../../core/express/util";
+import { error403, getHeader, getLoginToken, getParam } from "../../core/express/util";
 import { User } from "../user/service";
 
 const db = database();
@@ -15,7 +15,7 @@ export const CheckPermissions = (...permissions: string[]) => {
         descriptor.value = async function (...funcArgs: any[]) {
             let userId:number | null = null;
             // Get the login token from the request headers
-            const token = getHeader('authorization')(funcArgs).split(" ")[1];
+            const token = getLoginToken(funcArgs);
             if (!token) {
                 // If no token is found, load the public user
                 const publicUser = await memoizePromise(async () => User.loadByName("public"), {})();
