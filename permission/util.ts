@@ -13,6 +13,7 @@ export const CheckPermissions = (...permissions: string[]) => {
         const originalMethod = descriptor.value;
 
         descriptor.value = async function (...funcArgs: any[]) {
+
             let userId:number | null = null;
             // Get the login token from the request headers
             const token = getLoginToken(funcArgs);
@@ -34,12 +35,24 @@ export const CheckPermissions = (...permissions: string[]) => {
             const getUserPermissions = memoizePromise(User.permissions.get, {ttl: 1000 * 60 * 5});
             const userPermissions = await getUserPermissions(userId);
             if(!userPermissions) {
+                console.log("No user permissions found");
                 throw error403;
             }
 
             // Check if the user has the required permissions
             const hasPermission = intersection(permissions, userPermissions.map(p => p.name)).length > 0;
             if (!hasPermission) {
+                console.log(`User does not have permission ${permissions}`);
+                throw error403;
+            }
+
+            // If this is a user specific endpoint, make sure the user has the same userId
+            // However, if the user has the "user.admin" permission, they can access any user
+            const pathId = getParam("userId")(funcArgs);
+            const isAdmin = userPermissions.find(p => p.name === "user.admin");
+            const idsMatch = `${pathId}` === `${userId}`;
+            if (pathId && !isAdmin && !idsMatch) {
+                console.log(`User does not have permission to access userId ${pathId}`);
                 throw error403;
             }
 

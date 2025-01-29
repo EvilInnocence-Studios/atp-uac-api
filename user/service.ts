@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { omit } from "ts-functional";
 import { getAppConfig, salt, secret } from '../../../config';
 import { basicCrudService, basicRelationService, twoWayRelationService } from '../../core/express/service/common';
-import { loadBy, loadById } from '../../core/express/util';
+import { error403, loadBy, loadById } from '../../core/express/util';
 import { render } from "../../core/render";
 import { sendEmail } from "../../core/sendEmail";
 import { IProduct } from "../../store-shared/product/types";
@@ -12,6 +12,7 @@ import { IRole } from '../../uac-shared/role/types';
 import { IUser, NewUser, SafeUser, UserUpdate } from '../../uac-shared/user/types';
 import { ForgotPassword } from "../components/forgotPassword";
 import { ForgotUsername } from "../components/forgotUsername";
+import { database } from '../../core/database';
 
 const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
 const removePassword = omit<Partial<UserUpdate>, "password">("password");
@@ -26,6 +27,8 @@ const assignDefaultRole = async (user:IUser) => {
     const roleId = getAppConfig().defaultUserRoleId;
     await User.roles.add(user.id, roleId);
 }
+
+const db = database();
 
 export const User = {
     ...basicCrudService<IUser, NewUser, UserUpdate, SafeUser>("users", "userName", makeSafe, hashUserPassword, hashUserPassword, assignDefaultRole),
@@ -58,6 +61,10 @@ export const User = {
         sendEmail(getAppConfig().emailTemplates.forgotPassword.subject, html, [user.email]);
     },
 
+    createPasswordResetToken: async (userName:string):Promise<string> => {
+        return jwt.sign({userName}, secret, {expiresIn: "1h"});
+    },
+
     forgotUserName: async (email:string):Promise<any> => {
         const user = await User.loadBy("email")(email);
     
@@ -71,7 +78,28 @@ export const User = {
 
     },
 
-    resetPassword: async (token:string, password:string):Promise<any> => {
-       // TODO: Implement
+    resetPassword: async (token:string, oldPassword:string, newPassword: string):Promise<any> => {
+        // Verify the token
+        const {userName} = jwt.verify(token, secret) as {userName: string};
+
+        if(!userName) {
+            throw error403;
+        }
+
+        // Get the user by the username
+        const user = await User.loadUnsafeByName(userName);
+        if(!user) {
+            throw error403;
+        }
+
+        // Check if the old password matches
+        if(user.passwordHash !== User.hashPassword(oldPassword)) {
+            throw error403;
+        }
+
+        // Update the user with the new password
+        await db("users")
+            .update({passwordHash: User.hashPassword(newPassword)})
+            .where({userName});
     }
 };

@@ -190,8 +190,8 @@ export const init:IMigration = {
         db.insert(      permissions).into("permissions"    ),
         db.insert(  rolePermissions).into("rolePermissions"),
         db.insert(        userRoles).into("userRoles"      ),
-        db.raw("ALTER SEQUENCE users_id_seq RESTART WITH 10"),
-        db.raw("ALTER SEQUENCE roles_id_seq RESTART WITH 10"),
-        db.raw("ALTER SEQUENCE permissions_id_seq RESTART WITH 100"),
+        // db.raw("ALTER SEQUENCE users_id_seq RESTART WITH 10"),
+        // db.raw("ALTER SEQUENCE roles_id_seq RESTART WITH 10"),
+        // db.raw("ALTER SEQUENCE permissions_id_seq RESTART WITH 100"),
     ]),
 }

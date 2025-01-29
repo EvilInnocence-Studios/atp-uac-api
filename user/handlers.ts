@@ -2,7 +2,7 @@ import { pipeTo } from "serverless-api-boilerplate";
 import { pipe } from "ts-functional";
 import { database } from '../../core/database';
 import { HandlerArgs } from '../../core/express/types';
-import { getBody, getBodyParam, getParam } from "../../core/express/util";
+import { getBody, getBodyParam, getParam, getQuery, getQueryParam } from "../../core/express/util";
 import { CheckPermissions } from "../permission/util";
 import { User } from "./service";
 import { IUser, NewUser, SafeUser } from "../../uac-shared/user/types";
@@ -23,7 +23,7 @@ class UserHandlerClass  {
 
     @CheckPermissions("user.update")
     public update (...args:HandlerArgs<Partial<IUser>>):Promise<SafeUser> { 
-        return pipeTo(User.update, getBodyParam("userId"), getBody)(args);
+        return pipeTo(User.update, getParam("userId"), getBody)(args);
     }
 
     @CheckPermissions("user.view")
@@ -77,7 +77,11 @@ class UserHandlerClass  {
     }
 
     public resetPassword(...args:HandlerArgs<Query>):Promise<any> {
-        return pipeTo(User.resetPassword, getBodyParam("token"), getBodyParam("password"))(args);
+        return pipeTo(User.resetPassword, getBodyParam("token"), getBodyParam("oldPassword"), getBodyParam("newPassword"))(args);
+    }
+
+    public createPasswordResetToken(...args:HandlerArgs<Query>):Promise<string> {
+        return pipeTo(User.createPasswordResetToken, getQueryParam("userName"))(args);
     }
 
     public forgotUserName(...args:HandlerArgs<Query>):Promise<any> {
