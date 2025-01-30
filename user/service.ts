@@ -78,22 +78,11 @@ export const User = {
 
     },
 
-    resetPassword: async (token:string, oldPassword:string, newPassword: string):Promise<any> => {
+    resetPassword: async (token:string, newPassword: string):Promise<any> => {
         // Verify the token
         const {userName} = jwt.verify(token, secret) as {userName: string};
 
         if(!userName) {
-            throw error403;
-        }
-
-        // Get the user by the username
-        const user = await User.loadUnsafeByName(userName);
-        if(!user) {
-            throw error403;
-        }
-
-        // Check if the old password matches
-        if(user.passwordHash !== User.hashPassword(oldPassword)) {
             throw error403;
         }
 

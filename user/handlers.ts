@@ -77,7 +77,7 @@ class UserHandlerClass  {
     }
 
     public resetPassword(...args:HandlerArgs<Query>):Promise<any> {
-        return pipeTo(User.resetPassword, getBodyParam("token"), getBodyParam("oldPassword"), getBodyParam("newPassword"))(args);
+        return pipeTo(User.resetPassword, getBodyParam("token"), getBodyParam("newPassword"))(args);
     }
 
     public createPasswordResetToken(...args:HandlerArgs<Query>):Promise<string> {
