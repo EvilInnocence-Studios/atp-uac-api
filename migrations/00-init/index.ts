@@ -68,6 +68,11 @@ const permissions:IPermission[] = [
     {id: 37, name: "product.subscription", description: "Is a subscriber"       },
 
     {id: 38, name: "order.purchase",       description: "Can purchase an order" },
+    
+    {id: 39, name: "discount.view",        description: "Can view discounts"    },
+    {id: 40, name: "discount.update",      description: "Can update discounts"  },
+    {id: 41, name: "discount.create",      description: "Can create discounts"  },
+    {id: 42, name: "discount.delete",      description: "Can delete discounts"  },
 ];
 
 const rolePermissions = [
@@ -108,6 +113,10 @@ const rolePermissions = [
     {roleId: 1, permissionId: 34},
     {roleId: 1, permissionId: 35},
     {roleId: 1, permissionId: 36},
+    {roleId: 1, permissionId: 39},
+    {roleId: 1, permissionId: 40},
+    {roleId: 1, permissionId: 41},
+    {roleId: 1, permissionId: 42},
 
     // Public user gets only public view permissions
     {roleId: 2, permissionId:  3},
@@ -116,6 +125,10 @@ const rolePermissions = [
     {roleId: 2, permissionId: 21},
     {roleId: 2, permissionId: 25},
     {roleId: 2, permissionId: 29},
+    {roleId: 1, permissionId: 39},
+    {roleId: 1, permissionId: 40},
+    {roleId: 1, permissionId: 41},
+    {roleId: 1, permissionId: 42},
 
     // Customer gets only customer view permissions
     {roleId: 3, permissionId:  3},
@@ -129,6 +142,10 @@ const rolePermissions = [
     {roleId: 3, permissionId: 35},
     {roleId: 3, permissionId: 36},
     {roleId: 3, permissionId: 38},
+    {roleId: 1, permissionId: 39},
+    {roleId: 1, permissionId: 40},
+    {roleId: 1, permissionId: 41},
+    {roleId: 1, permissionId: 42},
     // TODO: Need to add account permissions
 
     // BSP gets BSP view permissions
