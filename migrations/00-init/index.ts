@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
-import { database } from "../../core/database";
-import { IMigration } from "../../core/database.d";
-import { IPermission } from "../../uac-shared/permissions/types";
-import { IRole } from "../../uac-shared/role/types";
-import { IUser } from "../../uac-shared/user/types";
-import { User } from "../user/service";
+import { database } from "../../../core/database";
+import { IMigration } from "../../../core/database.d";
+import { IPermission } from "../../../uac-shared/permissions/types";
+import { IRole } from "../../../uac-shared/role/types";
+import { IUser } from "../../../uac-shared/user/types";
+import { User } from "../../user/service";
 
 const db = database();
 
