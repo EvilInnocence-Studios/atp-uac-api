@@ -14,7 +14,7 @@ export const CheckPermissions = (...permissions: string[]) => {
 
         descriptor.value = async function (...funcArgs: any[]) {
 
-            let userId:number | null = null;
+            let userId:string | null = null;
             // Get the login token from the request headers
             const token = getLoginToken(funcArgs);
             if (!token) {

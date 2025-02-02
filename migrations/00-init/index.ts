@@ -9,19 +9,19 @@ import { User } from "../../user/service";
 const db = database();
 
 const userBlanks = {firstName: "", lastName: "", prefix: "", suffix: "", createdAt: dayjs().toISOString()};
-const users:IUser[] = [
+const users = [
     {id: 1, userName: "admin",  email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true, ...userBlanks},
     {id: 2, userName: "public", email: "",                  passwordHash: "",                         mustUpdatePassword: false, ...userBlanks},
 ];
 
-const roles:IRole[] = [
+const roles = [
     {id: 1, name: "SuperUser", description: "SuperUser role"    },
     {id: 2, name: "Public",    description: "Non-logged in user"},
     {id: 3, name: "Customer",  description: "Store customer"    },
     {id: 4, name: "BSP",       description: "BSP subscriber"    },
 ];
 
-const permissions:IPermission[] = [
+const permissions = [
     {id:  1, name: "user.view",            description: "Can view users"        },
     {id:  2, name: "user.update",          description: "Can update users"      },
     {id:  3, name: "user.create",          description: "Can create users"      },
