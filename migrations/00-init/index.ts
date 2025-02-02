@@ -125,10 +125,10 @@ const rolePermissions = [
     {roleId: 2, permissionId: 21},
     {roleId: 2, permissionId: 25},
     {roleId: 2, permissionId: 29},
-    {roleId: 1, permissionId: 39},
-    {roleId: 1, permissionId: 40},
-    {roleId: 1, permissionId: 41},
-    {roleId: 1, permissionId: 42},
+    {roleId: 2, permissionId: 39},
+    {roleId: 2, permissionId: 40},
+    {roleId: 2, permissionId: 41},
+    {roleId: 2, permissionId: 42},
 
     // Customer gets only customer view permissions
     {roleId: 3, permissionId:  3},
@@ -142,10 +142,10 @@ const rolePermissions = [
     {roleId: 3, permissionId: 35},
     {roleId: 3, permissionId: 36},
     {roleId: 3, permissionId: 38},
-    {roleId: 1, permissionId: 39},
-    {roleId: 1, permissionId: 40},
-    {roleId: 1, permissionId: 41},
-    {roleId: 1, permissionId: 42},
+    {roleId: 3, permissionId: 39},
+    {roleId: 3, permissionId: 40},
+    {roleId: 3, permissionId: 41},
+    {roleId: 3, permissionId: 42},
     // TODO: Need to add account permissions
 
     // BSP gets BSP view permissions
@@ -169,7 +169,7 @@ export const init:IMigration = {
     up: () => db.schema
         // Users table
         .createTable("users", t => {
-            t.increments().unsigned();
+            t.bigIncrements();
             t.string( "userName",      255).notNullable().unique();
             t.string( "email",         255).notNullable().unique();
             t.string("prefix"             ).notNullable().defaultTo("");
@@ -181,23 +181,23 @@ export const init:IMigration = {
             t.dateTime("createdAt"        ).notNullable().defaultTo(db.fn.now());
         })
         .createTable("roles", t => {
-            t.increments().unsigned();
+            t.bigIncrements();
             t.string("name",         64).notNullable().unique();
             t.string("description", 255);
         })
         .createTable("permissions", t => {
-            t.increments().unsigned();
+            t.bigIncrements();
             t.string("name",         64).notNullable().unique();
             t.string("description", 255);
         })
         .createTable("rolePermissions", t => {
-            t.integer("roleId"      ).unsigned().notNullable().references("id").inTable("roles"      ).onDelete("CASCADE");
-            t.integer("permissionId").unsigned().notNullable().references("id").inTable("permissions").onDelete("CASCADE");
+            t.bigInteger("roleId"      ).unsigned().notNullable().references("id").inTable("roles"      ).onDelete("CASCADE");
+            t.bigInteger("permissionId").unsigned().notNullable().references("id").inTable("permissions").onDelete("CASCADE");
             t.unique(["roleId", "permissionId"]);
         })
         .createTable("userRoles", t => {
-            t.integer("roleId").unsigned().notNullable().references("id").inTable("roles").onDelete("CASCADE");
-            t.integer("userId").unsigned().notNullable().references("id").inTable("users").onDelete("CASCADE");
+            t.bigInteger("roleId").unsigned().notNullable().references("id").inTable("roles").onDelete("CASCADE");
+            t.bigInteger("userId").unsigned().notNullable().references("id").inTable("users").onDelete("CASCADE");
             t.unique(["roleId", "userId"]);
         }),
     priority: 0,
@@ -207,8 +207,8 @@ export const init:IMigration = {
         db.insert(      permissions).into("permissions"    ),
         db.insert(  rolePermissions).into("rolePermissions"),
         db.insert(        userRoles).into("userRoles"      ),
-        // db.raw("ALTER SEQUENCE users_id_seq RESTART WITH 10"),
-        // db.raw("ALTER SEQUENCE roles_id_seq RESTART WITH 10"),
-        // db.raw("ALTER SEQUENCE permissions_id_seq RESTART WITH 100"),
+        db.raw("ALTER SEQUENCE users_id_seq RESTART WITH 100"),
+        db.raw("ALTER SEQUENCE roles_id_seq RESTART WITH 100"),
+        db.raw("ALTER SEQUENCE permissions_id_seq RESTART WITH 100"),
     ]),
 }
