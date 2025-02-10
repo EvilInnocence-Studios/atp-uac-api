@@ -7,9 +7,13 @@ export declare interface IForgotUsernameParams {
 }
 
 export const ForgotUsername = ({email, userName}:IForgotUsernameParams) => {
-    return (
+    return <>
         <div>
-            <h1>Username for {email}: <b>{userName}</b></h1>
+            <h1>EvilInnocence Studios</h1>
+            <p>
+                Username for {email}:<br/>
+                <b>{userName}</b>
+            </p>
         </div>
-    );
+    </>;
 }
