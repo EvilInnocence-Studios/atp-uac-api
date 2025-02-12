@@ -21,7 +21,7 @@ class RoleHandlersClass {
 
     @CheckPermissions("role.view")
     public get(...args:HandlerArgs<Query>):Promise<IRole> {
-        return pipeTo(Role.loadById, pipe(getParam("roleId"), parseInt))(args);
+        return pipeTo(Role.loadById, getParam("roleId"))(args);
     }
 
     @CheckPermissions("role.update")
@@ -36,7 +36,7 @@ class RoleHandlersClass {
 
     @CheckPermissions("role.view", "permission.view")
     public getPermissions(...args:HandlerArgs<Query>):Promise<IPermission[]> {
-        return pipeTo(Role.permissions.get, pipe(getParam("roleId"), parseInt))(args);
+        return pipeTo(Role.permissions.get, getParam("roleId"))(args);
     }
 
     @CheckPermissions("role.update")
@@ -46,7 +46,7 @@ class RoleHandlersClass {
 
     @CheckPermissions("role.update")
     public removePermission(...args:HandlerArgs<undefined>):Promise<any> {
-        return pipeTo(Role.permissions.remove, pipe(getParam("roleId"), parseInt), pipe(getParam("permissionId"), parseInt))(args);
+        return pipeTo(Role.permissions.remove, getParam("roleId"), getParam("permissionId"))(args);
     }
 }
 

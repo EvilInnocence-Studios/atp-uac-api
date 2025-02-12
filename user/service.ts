@@ -39,10 +39,10 @@ export const User = {
     permissions: twoWayRelationService<IPermission>("userId", "roleId", "permissionId", "userRoles", "rolePermissions", "permissions"),
     wishlists: basicRelationService<IProduct>("wishlists", "userId", "products", "productId"),
 
-    getLoggedInUser: (token:string):number | null => {
+    getLoggedInUser: (token:string):string | null => {
         console.log(token);
         if(!token) return null;
-        const userId = parseInt(jwt.verify(token, secret) as string, 10);
+        const userId = jwt.verify(token, secret) as string;
         return userId;
     },
 

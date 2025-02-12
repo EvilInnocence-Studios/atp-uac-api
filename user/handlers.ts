@@ -1,12 +1,11 @@
 import { pipeTo } from "serverless-api-boilerplate";
-import { pipe } from "ts-functional";
+import { Query } from "../../core-shared/express/types";
 import { database } from '../../core/database';
 import { HandlerArgs } from '../../core/express/types';
-import { getBody, getBodyParam, getParam, getQuery, getQueryParam } from "../../core/express/util";
+import { getBody, getBodyParam, getParam, getQueryParam } from "../../core/express/util";
+import { IUser, NewUser, SafeUser } from "../../uac-shared/user/types";
 import { CheckPermissions } from "../permission/util";
 import { User } from "./service";
-import { IUser, NewUser, SafeUser } from "../../uac-shared/user/types";
-import { Query } from "../../core-shared/express/types";
 
 const db = database();
 
@@ -38,38 +37,38 @@ class UserHandlerClass  {
 
     @CheckPermissions("user.view", "role.view")
     public getRoles (...args:HandlerArgs<Query>): Promise<any[]> {
-        return pipeTo(User.roles.get, pipe(getParam("userId"), parseInt))(args);
+        return pipeTo(User.roles.get, getParam("userId"))(args);
     }
 
 
     @CheckPermissions("user.update")
     public addRole (...args:HandlerArgs<Partial<IUser>>): Promise<any> {
-        return pipeTo(User.roles.add, pipe(getParam("userId"), parseInt), pipe(getBodyParam("roleId"), parseInt))(args);
+        return pipeTo(User.roles.add, getParam("userId"), getBodyParam("roleId"))(args);
     }
 
     @CheckPermissions("user.update")
     public removeRole (...args:HandlerArgs<undefined>): Promise<any> {
-        return pipeTo(User.roles.remove, pipe(getParam("userId"), parseInt), pipe(getParam("roleId"), parseInt))(args);
+        return pipeTo(User.roles.remove, getParam("userId"), getParam("roleId"))(args);
     }
 
     @CheckPermissions("user.view", "permission.view")
     public getPermissions (...args:HandlerArgs<Query>): Promise<any[]> {
-        return pipeTo(User.permissions.get, pipe(getParam("userId"), parseInt))(args);
+        return pipeTo(User.permissions.get, getParam("userId"))(args);
     }
 
     @CheckPermissions("user.view")
     public getWishlists (...args:HandlerArgs<Query>): Promise<any[]> {
-        return pipeTo(User.wishlists.get, pipe(getParam("userId"), parseInt))(args);
+        return pipeTo(User.wishlists.get, getParam("userId"))(args);
     }
 
     @CheckPermissions("user.update")
     public addToWishlist (...args:HandlerArgs<Partial<IUser>>): Promise<any> {
-        return pipeTo(User.wishlists.add, pipe(getParam("userId"), parseInt), pipe(getBodyParam("productId"), parseInt))(args);
+        return pipeTo(User.wishlists.add, getParam("userId"), getBodyParam("productId"))(args);
     }
 
     @CheckPermissions("user.update")
     public removeFromWishlist (...args:HandlerArgs<undefined>): Promise<any> {
-        return pipeTo(User.wishlists.remove, pipe(getParam("userId"), parseInt), pipe(getParam("productId"), parseInt))(args);
+        return pipeTo(User.wishlists.remove, getParam("userId"), getParam("productId"))(args);
     }
 
     public forgotPassword(...args:HandlerArgs<Query>):Promise<any> {
