@@ -2,7 +2,7 @@ import { pipeTo } from "serverless-api-boilerplate";
 import { pipe } from "ts-functional";
 import { Query } from "../../core-shared/express/types";
 import { HandlerArgs } from "../../core/express/types";
-import { getBody, getBodyParam, getParam, getQuery } from "../../core/express/util";
+import { getBody, getBodyParam, getParam, getQuery } from "../../core/express/extractors";
 import { IPermission } from "../../uac-shared/permissions/types";
 import { IRole, NewRole } from "../../uac-shared/role/types";
 import { CheckPermissions } from "../permission/util";

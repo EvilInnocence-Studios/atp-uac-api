@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { salt, secret } from "../../../config";
-import { error401 } from "../../core/express/util";
+import { error401 } from "../../core/express/errors";
 import { ILoginResponse } from "../../uac-shared/login/types";
 import { User } from "../user/service";
 

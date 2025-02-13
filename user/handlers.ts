@@ -2,10 +2,11 @@ import { pipeTo } from "serverless-api-boilerplate";
 import { Query } from "../../core-shared/express/types";
 import { database } from '../../core/database';
 import { HandlerArgs } from '../../core/express/types';
-import { getBody, getBodyParam, getParam, getQueryParam } from "../../core/express/util";
+import { getBody, getBodyParam, getParam, getQueryParam, getUserPermissions } from "../../core/express/extractors";
 import { IUser, NewUser, SafeUser } from "../../uac-shared/user/types";
-import { CheckPermissions } from "../permission/util";
+import { CheckPermissions, hasPermission } from "../permission/util";
 import { User } from "./service";
+import { prop } from "ts-functional";
 
 const db = database();
 
@@ -57,8 +58,13 @@ class UserHandlerClass  {
     }
 
     @CheckPermissions("user.view")
-    public getWishlists (...args:HandlerArgs<Query>): Promise<any[]> {
-        return pipeTo(User.wishlists.get, getParam("userId"))(args);
+    public async getWishlists (...args:HandlerArgs<Query>): Promise<any[]> {
+        const wishlistItems = await pipeTo(User.wishlists.get, getParam("userId"))(args);
+
+        const userPermissions = await getUserPermissions(args);
+        return hasPermission(["product.disabled"], userPermissions)
+            ? wishlistItems
+            : (wishlistItems).filter(prop("enabled"));
     }
 
     @CheckPermissions("user.update")
