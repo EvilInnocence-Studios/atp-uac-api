@@ -14,6 +14,8 @@ import { IRole } from '../../uac-shared/role/types';
 import { IUser, NewUser, SafeUser, UserUpdate } from '../../uac-shared/user/types';
 import { ForgotPassword } from "../components/forgotPassword";
 import { ForgotUsername } from "../components/forgotUsername";
+import { RoleChange } from "../components/roleChange";
+import { Role } from '../role/service';
 
 const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
 const removePassword = omit<Partial<UserUpdate>, "password">("password");
@@ -31,12 +33,27 @@ const assignDefaultRole = async (user:IUser) => {
 
 const db = database();
 
+const sendRoleChangeEmail = async (userId: string, roleId: string, action: "add" | "remove") => {
+    const user:SafeUser = await User.loadById(userId);
+    const role:IRole = await Role.loadById(roleId);
+    const html = render(RoleChange, { role, action });
+    return sendEmail(getAppConfig().emailTemplates.roleChange.subject, html, [user.email]);
+};
+
+export const makeUserSafe = (user:IUser):SafeUser =>
+    omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
+
 export const User = {
     ...basicCrudService<IUser, NewUser, UserUpdate, SafeUser>("users", "userName", makeSafe, hashUserPassword, hashUserPassword, assignDefaultRole),
     loadUnsafe:       loadById<IUser>("users"),
     loadUnsafeByName: loadBy<IUser>("userName", "users"),
 
-    roles: basicRelationService<IRole>("userRoles", "userId", "roles", "roleId"),
+    roles: basicRelationService<IRole>("userRoles", "userId", "roles", "roleId", {
+        afterAdd: (userId: string, roleId: string) => 
+            sendRoleChangeEmail(userId, roleId, "add" as "add"),
+        afterRemove: (userId: string, roleId: string) => 
+            sendRoleChangeEmail(userId, roleId, "removed" as "remove"),
+    }),
     permissions: twoWayRelationService<IPermission>("userId", "roleId", "permissionId", "userRoles", "rolePermissions", "permissions"),
     wishlists: basicRelationService<IProduct>("wishlists", "userId", "products", "productId"),
 
@@ -47,7 +64,7 @@ export const User = {
         return userId;
     },
 
-    makeSafe: (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser,
+    makeSafe: makeUserSafe,
     hashPassword: (str:string) => sha256(salt + str).toString(),
 
     forgotPassword: async (userName:string):Promise<any> => {

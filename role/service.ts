@@ -3,12 +3,12 @@ import { basicCrudService, basicRelationService } from "../../core/express/servi
 import { IPermission } from "../../uac-shared/permissions/types";
 import { IRole } from "../../uac-shared/role/types";
 import { IUser, SafeUser } from "../../uac-shared/user/types";
-import { User } from "../user/service";
+import { makeUserSafe, User } from "../user/service";
 
 const db = database();
 
 export const Role = {
     ...basicCrudService<IRole>("roles"),
-    users: basicRelationService<SafeUser, IUser>("userRoles", "roleId", "users", "userId", User.makeSafe),
+    users: basicRelationService<SafeUser, IUser>("userRoles", "roleId", "users", "userId", {afterLoad: makeUserSafe}),
     permissions: basicRelationService<IPermission>("rolePermissions", "roleId", "permissions", "permissionId"),
 }
