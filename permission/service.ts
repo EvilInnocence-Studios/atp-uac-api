@@ -7,5 +7,5 @@ import { User } from "../user/service";
 export const Permission = {
     ...basicCrudService<IPermission>("permissions"),
     roles: basicRelationService<IRole>("rolePermissions", "permissionId", "roles", "roleId"),
-    users: twoWayRelationService<SafeUser, IUser>("permissionId", "roleId", "userId", "rolePermissions", "userRoles", "users", User.makeSafe),
+    users: twoWayRelationService<SafeUser, IUser>("permissionId", "roleId", "userId", "rolePermissions", "userRoles", "users", {afterLoad: User.makeSafe}),
 };

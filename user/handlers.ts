@@ -92,6 +92,16 @@ class UserHandlerClass  {
     public forgotUserName(...args:HandlerArgs<Query>):Promise<any> {
         return pipeTo(User.forgotUserName, getBodyParam("email"))(args);
     }
+
+    @CheckPermissions("user.update")
+    public subscribe (...args:HandlerArgs<Partial<IUser>>): Promise<any> {
+        return pipeTo(User.subscribe, getParam("userId"), getBodyParam("subscriptionId"))(args);
+    }
+
+    @CheckPermissions("user.update")
+    public unsubscribe (...args:HandlerArgs<undefined>): Promise<any> {
+        return pipeTo(User.unsubscribe, getParam("userId"))(args);
+    }
 }
 
 export const UserHandlers = new UserHandlerClass();

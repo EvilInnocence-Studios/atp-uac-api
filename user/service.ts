@@ -14,8 +14,10 @@ import { IRole } from '../../uac-shared/role/types';
 import { IUser, NewUser, SafeUser, UserUpdate } from '../../uac-shared/user/types';
 import { ForgotPassword } from "../components/forgotPassword";
 import { ForgotUsername } from "../components/forgotUsername";
+import { NewAccount } from '../components/newAccount';
 import { RoleChange } from "../components/roleChange";
 import { Role } from '../role/service';
+import { client, subscription } from '../../core/paypal';
 
 const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
 const removePassword = omit<Partial<UserUpdate>, "password">("password");
@@ -26,9 +28,14 @@ const hashUserPassword = (user:any):any => user.password
     ? {...removePassword(user), passwordHash: sha256(salt + user.password).toString() }
     : removePassword(user);
 
-const assignDefaultRole = async (user:IUser) => {
+const afterUserCreate = async (user:IUser) => {
+    //  Assign a default role
     const roleId = getAppConfig().defaultUserRoleId;
     await User.roles.add(user.id, roleId);
+
+    // Send an account create email
+    const html = render(NewAccount, {user});
+    sendEmail(getAppConfig().emailTemplates.newAccount.subject, html, [user.email, getAppConfig().supportEmail]);
 }
 
 const db = database();
@@ -37,14 +44,19 @@ const sendRoleChangeEmail = async (userId: string, roleId: string, action: "add"
     const user:SafeUser = await User.loadById(userId);
     const role:IRole = await Role.loadById(roleId);
     const html = render(RoleChange, { role, action });
-    return sendEmail(getAppConfig().emailTemplates.roleChange.subject, html, [user.email]);
+    return sendEmail(getAppConfig().emailTemplates.roleChange.subject, html, [user.email, getAppConfig().supportEmail]);
 };
 
 export const makeUserSafe = (user:IUser):SafeUser =>
     omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
 
 export const User = {
-    ...basicCrudService<IUser, NewUser, UserUpdate, SafeUser>("users", "userName", makeSafe, hashUserPassword, hashUserPassword, assignDefaultRole),
+    ...basicCrudService<IUser, NewUser, UserUpdate, SafeUser>("users", "userName", {
+        afterLoad: makeSafe,
+        beforeCreate: hashUserPassword,
+        beforeUpdate: hashUserPassword,
+        afterCreate: afterUserCreate,
+    }),
     loadUnsafe:       loadById<IUser>("users"),
     loadUnsafeByName: loadBy<IUser>("userName", "users"),
 
@@ -108,5 +120,32 @@ export const User = {
         await db("users")
             .update({passwordHash: User.hashPassword(newPassword)})
             .where({userName});
-    }
+    },
+
+    subscribe: async (userId:string, subscriptionId:string):Promise<any> => {
+        await db("users")
+            .update({subscriptionId})
+            .where({id: userId});
+
+        await User.roles.add(userId, getAppConfig().subscriptionRoleId);
+    },
+
+    unsubscribe: async (userId:string):Promise<any> => {
+        // Get the subscription ID from the database
+        const subscriptionId = await User.loadById(userId).then(user => user.subscriptionId);
+        if(!subscriptionId) {
+            return;
+        }
+        
+        // Cancel the subscription with PayPal
+        await subscription.cancel(subscriptionId);
+        
+        // Remove the subscription ID from the database
+        await db("users")
+            .update({subscriptionId: null})
+            .where({id: userId});
+
+        // Remove the subscription role from the user
+        await User.roles.remove(userId, getAppConfig().subscriptionRoleId);
+    },
 };

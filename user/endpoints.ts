@@ -37,6 +37,10 @@ export const UserEndpoints = {
                 ":productId": {
                     DELETE: del(UserHandlers.removeFromWishlist),
                 }
+            },
+            subscription: {
+                POST: post(UserHandlers.subscribe),
+                DELETE: del(UserHandlers.unsubscribe),
             }
         }
     },

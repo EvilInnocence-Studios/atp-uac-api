@@ -170,13 +170,14 @@ export const init:IMigration = {
         // Users table
         .createTable("users", t => {
             t.bigIncrements();
-            t.string( "userName",      255).notNullable().unique();
-            t.string( "email",         255).notNullable().unique();
+            t.string("userName",       255).notNullable().unique();
+            t.string("email",          255).notNullable().unique();
             t.string("prefix"             ).notNullable().defaultTo("");
             t.string("firstName"          ).notNullable().defaultTo("");
             t.string("lastName"           ).notNullable().defaultTo("");
             t.string("suffix"             ).notNullable().defaultTo("");
-            t.string( "passwordHash",   64).notNullable();
+            t.string("subscriptionId", 255).unique();
+            t.string("passwordHash",    64).notNullable();
             t.boolean("mustUpdatePassword").notNullable();
             t.dateTime("createdAt"        ).notNullable().defaultTo(db.fn.now());
         })
