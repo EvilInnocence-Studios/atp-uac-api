@@ -5,7 +5,7 @@ import { getAppConfig, salt, secret } from '../../../config';
 import { database } from '../../core/database';
 import { error403 } from '../../core/express/errors';
 import { basicCrudService, basicRelationService, twoWayRelationService } from '../../core/express/service/common';
-import { loadBy, loadById } from '../../core/express/util';
+import { loadBy, loadById, loadByInsensitive } from '../../core/express/util';
 import { render } from "../../core/render";
 import { sendEmail } from "../../core/sendEmail";
 import { IProduct } from "../../store-shared/product/types";
@@ -57,8 +57,9 @@ export const User = {
         beforeUpdate: hashUserPassword,
         afterCreate: afterUserCreate,
     }),
-    loadUnsafe:       loadById<IUser>("users"),
-    loadUnsafeByName: loadBy<IUser>("userName", "users"),
+    loadUnsafe:                  loadById<IUser>("users"),
+    loadUnsafeByName:            loadBy<IUser>("userName", "users"),
+    loadUnsafeByNameInsensitive: loadByInsensitive<IUser>("userName", "users"),
 
     roles: basicRelationService<IRole>("userRoles", "userId", "roles", "roleId", {
         afterAdd: (userId: string, roleId: string) => 
@@ -85,8 +86,10 @@ export const User = {
 
         // Send an email with the link via AWS SES
         const html = render(ForgotPassword, {userName, token});
+        console.log(html);
 
         const user = await User.loadBy("userName")(userName);
+        console.log(user);
 
         sendEmail(getAppConfig().emailTemplates.forgotPassword.subject, html, [user.email]);
     },
@@ -97,13 +100,16 @@ export const User = {
 
     forgotUserName: async (email:string):Promise<any> => {
         const user = await User.loadBy("email")(email);
+        console.log(user);
     
         if(!user) {
+            console.log("User not found");
             return;
         }
 
         // Get the forgot username template
         const html = render(ForgotUsername,  {email, userName: user.userName});
+        console.log(html);
         sendEmail(getAppConfig().emailTemplates.forgotUserName.subject, html, [email]);
 
     },
