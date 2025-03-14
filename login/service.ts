@@ -8,20 +8,20 @@ export const Login = {
     login: async (userName: string, password:string):Promise<ILoginResponse> => {
         console.log(`Logging in ${userName} with password ${password}`);
         return User.loadUnsafeByNameInsensitive(userName).then(async user => {
-            // console.log("User", user);
-            // console.log("Salt", salt);
-            // console.log(`Hashed password: ${User.hashPassword(password)}`);
-            // console.log("Stored password", user.passwordHash);
+            console.log("User", user);
+            console.log("Salt", salt);
+            console.log(`Hashed password: ${User.hashPassword(password)}`);
+            console.log("Stored password", user.passwordHash);
             if(User.hashPassword(password) === user.passwordHash) {
-                // console.log("Passwords match");
+                console.log("Passwords match");
                 const userId = user.id;
                 return Login.profile(Promise.resolve(userId));
             } else {
-                // console.log("Passwords do not match");
+                console.log("Passwords do not match");
                 throw error401;
             }
         }).catch(() => {
-            // console.log("No user found");
+            console.log("No user found");
             throw error401;
         })
     },
