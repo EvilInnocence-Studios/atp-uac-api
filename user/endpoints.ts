@@ -21,6 +21,9 @@ export const UserEndpoints = {
             GET: get(UserHandlers.get),
             PATCH: patch(UserHandlers.update),
             DELETE: del(UserHandlers.remove),
+            resetPassword: {
+                POST: post(UserHandlers.resetPasswordByUser),
+            },
             role: {
                 GET: get(UserHandlers.getRoles),
                 POST: post(UserHandlers.addRole),

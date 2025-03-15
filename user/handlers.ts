@@ -1,12 +1,12 @@
 import { pipeTo } from "serverless-api-boilerplate";
+import { prop } from "ts-functional";
 import { Query } from "../../core-shared/express/types";
 import { database } from '../../core/database';
-import { HandlerArgs } from '../../core/express/types';
 import { getBody, getBodyParam, getParam, getQueryParam, getUserPermissions } from "../../core/express/extractors";
+import { HandlerArgs } from '../../core/express/types';
 import { IUser, NewUser, SafeUser } from "../../uac-shared/user/types";
 import { CheckPermissions, hasPermission } from "../permission/util";
 import { User } from "./service";
-import { prop } from "ts-functional";
 
 const db = database();
 
@@ -83,6 +83,10 @@ class UserHandlerClass  {
 
     public resetPassword(...args:HandlerArgs<Query>):Promise<any> {
         return pipeTo(User.resetPassword, getBodyParam("token"), getBodyParam("newPassword"))(args);
+    }
+
+    public resetPasswordByUser(...args:HandlerArgs<Query>):Promise<any> {
+        return pipeTo(User.resetPasswordByUser, getParam("userId"), getBodyParam("oldPassword"), getBodyParam("newPassword"))(args);
     }
 
     public createPasswordResetToken(...args:HandlerArgs<Query>):Promise<string> {

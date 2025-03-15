@@ -128,6 +128,18 @@ export const User = {
             .where({userName});
     },
 
+    resetPasswordByUser: async (userId:string, oldPassword:string, newPassword:string):Promise<any> => {
+        // Get the user from the database
+        const user = await User.loadUnsafe(userId);
+        if(user.passwordHash !== User.hashPassword(oldPassword)) {
+            throw error403;
+        }
+        // Update the user with the new password
+        await db("users")
+            .update({passwordHash: User.hashPassword(newPassword)})
+            .where({id: userId});
+    },
+
     subscribe: async (userId:string, subscriptionId:string):Promise<any> => {
         await db("users")
             .update({subscriptionId})
