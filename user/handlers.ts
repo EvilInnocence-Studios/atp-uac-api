@@ -57,7 +57,7 @@ class UserHandlerClass  {
         return pipeTo(User.permissions.get, getParam("userId"))(args);
     }
 
-    @CheckPermissions("user.view")
+    @CheckPermissions("wishlist.view")
     public async getWishlists (...args:HandlerArgs<Query>): Promise<any[]> {
         const wishlistItems = await pipeTo(User.wishlists.get, getParam("userId"))(args);
 
@@ -67,12 +67,12 @@ class UserHandlerClass  {
             : (wishlistItems).filter(prop("enabled"));
     }
 
-    @CheckPermissions("user.update")
+    @CheckPermissions("wishlist.create")
     public addToWishlist (...args:HandlerArgs<Partial<IUser>>): Promise<any> {
         return pipeTo(User.wishlists.add, getParam("userId"), getBodyParam("productId"))(args);
     }
 
-    @CheckPermissions("user.update")
+    @CheckPermissions("wishlist.delete")
     public removeFromWishlist (...args:HandlerArgs<undefined>): Promise<any> {
         return pipeTo(User.wishlists.remove, getParam("userId"), getParam("productId"))(args);
     }
