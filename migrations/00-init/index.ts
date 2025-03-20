@@ -9,7 +9,7 @@ import { User } from "../../user/service";
 const db = database();
 
 const userBlanks = {firstName: "", lastName: "", prefix: "", suffix: "", createdAt: dayjs().toISOString()};
-const users = [
+export const users = [
     {id: 1, userName: "admin",  email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true, ...userBlanks},
     {id: 2, userName: "public", email: "",                  passwordHash: "",                         mustUpdatePassword: false, ...userBlanks},
 ];
@@ -152,7 +152,7 @@ const rolePermissions = [
     {roleId: 4, permissionId:  37},
 ];
 
-const userRoles = [
+export const userRoles = [
     {userId: 1, roleId: 1},
     {userId: 2, roleId: 2},
 ];
