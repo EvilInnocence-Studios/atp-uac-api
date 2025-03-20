@@ -6,18 +6,19 @@ import { database } from '../../core/database';
 import { error403 } from '../../core/express/errors';
 import { basicCrudService, basicRelationService, twoWayRelationService } from '../../core/express/service/common';
 import { loadBy, loadById, loadByInsensitive } from '../../core/express/util';
+import { subscription } from '../../core/paypal';
 import { render } from "../../core/render";
 import { sendEmail } from "../../core/sendEmail";
 import { IProduct } from "../../store-shared/product/types";
 import { IPermission } from '../../uac-shared/permissions/types';
 import { IRole } from '../../uac-shared/role/types';
 import { IUser, NewUser, SafeUser, UserUpdate } from '../../uac-shared/user/types';
+import { CancelSubscription } from "../components/cancelSubscription";
 import { ForgotPassword } from "../components/forgotPassword";
 import { ForgotUsername } from "../components/forgotUsername";
 import { NewAccount } from '../components/newAccount';
 import { RoleChange } from "../components/roleChange";
 import { Role } from '../role/service';
-import { client, subscription } from '../../core/paypal';
 
 const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
 const removePassword = omit<Partial<UserUpdate>, "password">("password");
@@ -151,12 +152,14 @@ export const User = {
     unsubscribe: async (userId:string):Promise<any> => {
         // Get the subscription ID from the database
         const subscriptionId = await User.loadById(userId).then(user => user.subscriptionId);
-        if(!subscriptionId) {
-            return;
+        if(subscriptionId) {
+            // Cancel the subscription with PayPal
+            await subscription.cancel(subscriptionId);
+        } else {
+            const html = render(CancelSubscription, {user: await User.loadById(userId)});
+            sendEmail("Subscription Cancelled", html, [getAppConfig().supportEmail]);
         }
         
-        // Cancel the subscription with PayPal
-        await subscription.cancel(subscriptionId);
         
         // Remove the subscription ID from the database
         await db("users")
