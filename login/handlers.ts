@@ -1,4 +1,4 @@
-import { pipeTo } from "serverless-api-boilerplate";
+import { pipeTo } from "ts-functional";
 import { HandlerArgs } from "../../core/express/types";
 import { getBodyParam, getLoggedInUser } from "../../core/express/extractors";
 import { ILoginRequest, ILoginResponse } from "../../uac-shared/login/types";

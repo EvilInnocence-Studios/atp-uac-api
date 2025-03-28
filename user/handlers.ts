@@ -1,4 +1,4 @@
-import { pipeTo } from "serverless-api-boilerplate";
+import { pipeTo } from "ts-functional";
 import { prop } from "ts-functional";
 import { Query } from "../../core-shared/express/types";
 import { database } from '../../core/database';
