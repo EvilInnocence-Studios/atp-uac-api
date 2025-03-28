@@ -1,160 +1,143 @@
 import dayjs from "dayjs";
 import { database } from "../../../core/database";
 import { IMigration } from "../../../core/database.d";
-import { IPermission } from "../../../uac-shared/permissions/types";
-import { IRole } from "../../../uac-shared/role/types";
-import { IUser } from "../../../uac-shared/user/types";
 import { User } from "../../user/service";
+import { permissionsTable, rolePermissionsTable, rolesTable, userRolesTable, usersTable } from "../tables";
+import { insertRolePermissions, insertUsers, insertUserRoles, insertRoles, insertPermissions } from "../util";
 
 const db = database();
 
 const userBlanks = {firstName: "", lastName: "", prefix: "", suffix: "", createdAt: dayjs().toISOString()};
 export const users = [
-    {id: 1, userName: "admin",  email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true, ...userBlanks},
-    {id: 2, userName: "public", email: "",                  passwordHash: "",                         mustUpdatePassword: false, ...userBlanks},
+    {userName: "admin",  email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true, ...userBlanks},
+    {userName: "public", email: "",                  passwordHash: "",                         mustUpdatePassword: false, ...userBlanks},
 ];
 
 const roles = [
-    {id: 1, name: "SuperUser", description: "SuperUser role"    },
-    {id: 2, name: "Public",    description: "Non-logged in user"},
-    {id: 3, name: "Customer",  description: "Store customer"    },
-    {id: 4, name: "BSP",       description: "BSP subscriber"    },
+    { name: "SuperUser", description: "SuperUser role"    },
+    { name: "Public",    description: "Non-logged in user"},
+    { name: "Customer",  description: "Store customer"    },
+    { name: "BSP",       description: "BSP subscriber"    },
 ];
 
 const permissions = [
-    {id:  1, name: "user.view",            description: "Can view users"        },
-    {id:  2, name: "user.update",          description: "Can update users"      },
-    {id:  3, name: "user.create",          description: "Can create users"      },
-    {id:  4, name: "user.delete",          description: "Can delete users"      },
-    {id:  5, name: "role.view",            description: "Can view roles"        },
-    {id:  6, name: "role.update",          description: "Can update roles"      },
-    {id:  7, name: "role.create",          description: "Can create roles"      },
-    {id:  8, name: "role.delete",          description: "Can delete roles"      },
-    {id:  9, name: "permission.view",      description: "Can view permissions"  },
-    {id: 10, name: "permission.update",    description: "Can update permissions"},
-    {id: 11, name: "permission.create",    description: "Can create permissions"},
-    {id: 12, name: "permission.delete",    description: "Can delete permissions"},
+    { name: "user.view",            description: "Can view users"        },
+    { name: "user.update",          description: "Can update users"      },
+    { name: "user.create",          description: "Can create users"      },
+    { name: "user.delete",          description: "Can delete users"      },
+    { name: "role.view",            description: "Can view roles"        },
+    { name: "role.update",          description: "Can update roles"      },
+    { name: "role.create",          description: "Can create roles"      },
+    { name: "role.delete",          description: "Can delete roles"      },
+    { name: "permission.view",      description: "Can view permissions"  },
+    { name: "permission.update",    description: "Can update permissions"},
+    { name: "permission.create",    description: "Can create permissions"},
+    { name: "permission.delete",    description: "Can delete permissions"},
 
-    {id: 13, name: "tag.view",             description: "Can view tags"         },
-    {id: 14, name: "tag.update",           description: "Can update tags"       },
-    {id: 15, name: "tag.create",           description: "Can create tags"       },
-    {id: 16, name: "tag.delete",           description: "Can delete tags"       },
+    { name: "tag.view",             description: "Can view tags"         },
+    { name: "tag.update",           description: "Can update tags"       },
+    { name: "tag.create",           description: "Can create tags"       },
+    { name: "tag.delete",           description: "Can delete tags"       },
 
-    {id: 17, name: "product.view",         description: "Can view products"     },
-    {id: 18, name: "product.update",       description: "Can update products"   },
-    {id: 19, name: "product.create",       description: "Can create products"   },
-    {id: 20, name: "product.delete",       description: "Can delete products"   },
+    { name: "product.view",         description: "Can view products"     },
+    { name: "product.update",       description: "Can update products"   },
+    { name: "product.create",       description: "Can create products"   },
+    { name: "product.delete",       description: "Can delete products"   },
 
-    {id: 21, name: "media.view",           description: "Can view media"        },
-    {id: 22, name: "media.update",         description: "Can update media"      },
-    {id: 23, name: "media.create",         description: "Can create media"      },
-    {id: 24, name: "media.delete",         description: "Can delete media"      },
+    { name: "media.view",           description: "Can view media"        },
+    { name: "media.update",         description: "Can update media"      },
+    { name: "media.create",         description: "Can create media"      },
+    { name: "media.delete",         description: "Can delete media"      },
 
-    {id: 25, name: "synonym.view",         description: "Can view synonyms"     },
-    {id: 26, name: "synonym.update",       description: "Can update synonyms"   },
-    {id: 27, name: "synonym.create",       description: "Can create synonyms"   },
-    {id: 28, name: "synonym.delete",       description: "Can delete synonyms"   },
+    { name: "synonym.view",         description: "Can view synonyms"     },
+    { name: "synonym.update",       description: "Can update synonyms"   },
+    { name: "synonym.create",       description: "Can create synonyms"   },
+    { name: "synonym.delete",       description: "Can delete synonyms"   },
 
-    {id: 29, name: "banner.view",          description: "Can view banners"      },
-    {id: 30, name: "banner.update",        description: "Can update banners"    },
-    {id: 31, name: "banner.create",        description: "Can create banners"    },
-    {id: 32, name: "banner.delete",        description: "Can delete banners"    },
+    { name: "banner.view",          description: "Can view banners"      },
+    { name: "banner.update",        description: "Can update banners"    },
+    { name: "banner.create",        description: "Can create banners"    },
+    { name: "banner.delete",        description: "Can delete banners"    },
 
-    {id: 33, name: "order.view",           description: "Can view orders"       },
-    {id: 34, name: "order.update",         description: "Can update orders"     },
-    {id: 35, name: "order.create",         description: "Can create orders"     },
-    {id: 36, name: "order.delete",         description: "Can delete orders"     },
+    { name: "order.view",           description: "Can view orders"       },
+    { name: "order.update",         description: "Can update orders"     },
+    { name: "order.create",         description: "Can create orders"     },
+    { name: "order.delete",         description: "Can delete orders"     },
 
-    {id: 37, name: "product.subscription", description: "Is a subscriber"       },
+    { name: "product.subscription", description: "Is a subscriber"       },
 
-    {id: 38, name: "order.purchase",       description: "Can purchase an order" },
+    { name: "order.purchase",       description: "Can purchase an order" },
     
-    {id: 39, name: "discount.view",        description: "Can view discounts"    },
-    {id: 40, name: "discount.update",      description: "Can update discounts"  },
-    {id: 41, name: "discount.create",      description: "Can create discounts"  },
-    {id: 42, name: "discount.delete",      description: "Can delete discounts"  },
+    { name: "discount.view",        description: "Can view discounts"    },
+    { name: "discount.update",      description: "Can update discounts"  },
+    { name: "discount.create",      description: "Can create discounts"  },
+    { name: "discount.delete",      description: "Can delete discounts"  },
 ];
 
 const rolePermissions = [
-    // Super user gets all permissions
-    {roleId: 1, permissionId:  1},
-    {roleId: 1, permissionId:  2},
-    {roleId: 1, permissionId:  3},
-    {roleId: 1, permissionId:  4},
-    {roleId: 1, permissionId:  5},
-    {roleId: 1, permissionId:  6},
-    {roleId: 1, permissionId:  7},
-    {roleId: 1, permissionId:  8},
-    {roleId: 1, permissionId:  9},
-    {roleId: 1, permissionId: 10},
-    {roleId: 1, permissionId: 11},
-    {roleId: 1, permissionId: 12},
-    {roleId: 1, permissionId: 13},
-    {roleId: 1, permissionId: 14},
-    {roleId: 1, permissionId: 15},
-    {roleId: 1, permissionId: 16},
-    {roleId: 1, permissionId: 17},
-    {roleId: 1, permissionId: 18},
-    {roleId: 1, permissionId: 19},
-    {roleId: 1, permissionId: 20},
-    {roleId: 1, permissionId: 21},
-    {roleId: 1, permissionId: 22},
-    {roleId: 1, permissionId: 23},
-    {roleId: 1, permissionId: 24},
-    {roleId: 1, permissionId: 25},
-    {roleId: 1, permissionId: 26},
-    {roleId: 1, permissionId: 27},
-    {roleId: 1, permissionId: 28},
-    {roleId: 1, permissionId: 29},
-    {roleId: 1, permissionId: 30},
-    {roleId: 1, permissionId: 31},
-    {roleId: 1, permissionId: 32},
-    {roleId: 1, permissionId: 33},
-    {roleId: 1, permissionId: 34},
-    {roleId: 1, permissionId: 35},
-    {roleId: 1, permissionId: 36},
-    {roleId: 1, permissionId: 39},
-    {roleId: 1, permissionId: 40},
-    {roleId: 1, permissionId: 41},
-    {roleId: 1, permissionId: 42},
-
-    // Public user gets only public view permissions
-    {roleId: 2, permissionId:  3},
-    {roleId: 2, permissionId: 13},
-    {roleId: 2, permissionId: 17},
-    {roleId: 2, permissionId: 21},
-    {roleId: 2, permissionId: 25},
-    {roleId: 2, permissionId: 29},
-    {roleId: 2, permissionId: 39},
-    {roleId: 2, permissionId: 40},
-    {roleId: 2, permissionId: 41},
-    {roleId: 2, permissionId: 42},
-
-    // Customer gets only customer view permissions
-    {roleId: 3, permissionId:  3},
-    {roleId: 3, permissionId: 13},
-    {roleId: 3, permissionId: 17},
-    {roleId: 3, permissionId: 21},
-    {roleId: 3, permissionId: 25},
-    {roleId: 3, permissionId: 29},
-    {roleId: 3, permissionId: 33},
-    {roleId: 3, permissionId: 34},
-    {roleId: 3, permissionId: 35},
-    {roleId: 3, permissionId: 36},
-    {roleId: 3, permissionId: 38},
-    {roleId: 3, permissionId: 39},
-    {roleId: 3, permissionId: 40},
-    {roleId: 3, permissionId: 41},
-    {roleId: 3, permissionId: 42},
-    // TODO: Need to add account permissions
-
-    // BSP gets BSP view permissions
-    {roleId: 4, permissionId:  37},
+    { roleName: "SuperUser", permissionName: "user.view" },
+    { roleName: "SuperUser", permissionName: "user.update" },
+    { roleName: "SuperUser", permissionName: "user.create" },
+    { roleName: "SuperUser", permissionName: "user.delete" },
+    { roleName: "SuperUser", permissionName: "role.view" },
+    { roleName: "SuperUser", permissionName: "role.update" },
+    { roleName: "SuperUser", permissionName: "role.create" },
+    { roleName: "SuperUser", permissionName: "role.delete" },
+    { roleName: "SuperUser", permissionName: "permission.view" },
+    { roleName: "SuperUser", permissionName: "permission.update" },
+    { roleName: "SuperUser", permissionName: "permission.create" },
+    { roleName: "SuperUser", permissionName: "permission.delete" },
+    { roleName: "SuperUser", permissionName: "tag.view" },
+    { roleName: "SuperUser", permissionName: "tag.update" },
+    { roleName: "SuperUser", permissionName: "tag.create" },
+    { roleName: "SuperUser", permissionName: "tag.delete" },
+    { roleName: "SuperUser", permissionName: "product.view" },
+    { roleName: "SuperUser", permissionName: "product.update" },
+    { roleName: "SuperUser", permissionName: "product.create" },
+    { roleName: "SuperUser", permissionName: "product.delete" },
+    { roleName: "SuperUser", permissionName: "media.view" },
+    { roleName: "SuperUser", permissionName: "media.update" },
+    { roleName: "SuperUser", permissionName: "media.create" },
+    { roleName: "SuperUser", permissionName: "media.delete" },
+    { roleName: "SuperUser", permissionName: "synonym.view" },
+    { roleName: "SuperUser", permissionName: "synonym.update" },
+    { roleName: "SuperUser", permissionName: "synonym.create" },
+    { roleName: "SuperUser", permissionName: "synonym.delete" },
+    { roleName: "SuperUser", permissionName: "banner.view" },
+    { roleName: "SuperUser", permissionName: "banner.update" },
+    { roleName: "SuperUser", permissionName: "banner.create" },
+    { roleName: "SuperUser", permissionName: "banner.delete" },
+    { roleName: "SuperUser", permissionName: "order.view" },
+    { roleName: "SuperUser", permissionName: "order.update" },
+    { roleName: "SuperUser", permissionName: "order.create" },
+    { roleName: "SuperUser", permissionName: "order.delete" },
+    { roleName: "SuperUser", permissionName: "discount.view" },
+    { roleName: "SuperUser", permissionName: "discount.update" },
+    { roleName: "SuperUser", permissionName: "discount.create" },
+    { roleName: "SuperUser", permissionName: "discount.delete" },
+    { roleName: "Public", permissionName: "user.create" },
+    { roleName: "Public", permissionName: "tag.view" },
+    { roleName: "Public", permissionName: "product.view" },
+    { roleName: "Public", permissionName: "media.view" },
+    { roleName: "Public", permissionName: "synonym.view" },
+    { roleName: "Public", permissionName: "banner.view" },
+    { roleName: "Customer", permissionName: "user.create" },
+    { roleName: "Customer", permissionName: "tag.view" },
+    { roleName: "Customer", permissionName: "product.view" },
+    { roleName: "Customer", permissionName: "media.view" },
+    { roleName: "Customer", permissionName: "synonym.view" },
+    { roleName: "Customer", permissionName: "banner.view" },
+    { roleName: "Customer", permissionName: "order.view" },
+    { roleName: "Customer", permissionName: "order.update" },
+    { roleName: "Customer", permissionName: "order.create" },
+    { roleName: "Customer", permissionName: "order.delete" },
+    { roleName: "Customer", permissionName: "order.purchase" },
+    { roleName: "BSP", permissionName: "product.subscription" },
 ];
 
 export const userRoles = [
-    {userId: 1, roleId: 1},
-    {userId: 2, roleId: 2},
+    { userName: "admin", roleName: "SuperUser" },
+    { userName: "public", roleName: "Public" },
 ];
 
 export const init:IMigration = {
@@ -168,48 +151,17 @@ export const init:IMigration = {
 
     up: () => db.schema
         // Users table
-        .createTable("users", t => {
-            t.bigIncrements();
-            t.string("userName",       255).notNullable().unique();
-            t.string("email",          255).notNullable().unique();
-            t.string("prefix"             ).notNullable().defaultTo("");
-            t.string("firstName"          ).notNullable().defaultTo("");
-            t.string("lastName"           ).notNullable().defaultTo("");
-            t.string("suffix"             ).notNullable().defaultTo("");
-            t.string("subscriptionId", 255).unique();
-            t.string("passwordHash",    64).notNullable();
-            t.boolean("mustUpdatePassword").notNullable();
-            t.dateTime("createdAt"        ).notNullable().defaultTo(db.fn.now());
-        })
-        .createTable("roles", t => {
-            t.bigIncrements();
-            t.string("name",         64).notNullable().unique();
-            t.string("description", 255);
-        })
-        .createTable("permissions", t => {
-            t.bigIncrements();
-            t.string("name",         64).notNullable().unique();
-            t.string("description", 255);
-        })
-        .createTable("rolePermissions", t => {
-            t.bigInteger("roleId"      ).unsigned().notNullable().references("id").inTable("roles"      ).onDelete("CASCADE");
-            t.bigInteger("permissionId").unsigned().notNullable().references("id").inTable("permissions").onDelete("CASCADE");
-            t.unique(["roleId", "permissionId"]);
-        })
-        .createTable("userRoles", t => {
-            t.bigInteger("roleId").unsigned().notNullable().references("id").inTable("roles").onDelete("CASCADE");
-            t.bigInteger("userId").unsigned().notNullable().references("id").inTable("users").onDelete("CASCADE");
-            t.unique(["roleId", "userId"]);
-        }),
+        .createTable("users", usersTable)
+        .createTable("roles", rolesTable)
+        .createTable("permissions", permissionsTable)
+        .createTable("rolePermissions", rolePermissionsTable)
+        .createTable("userRoles", userRolesTable),
     priority: 0,
     initData: () => Promise.all([
-        db.insert(            users).into("users"          ),
-        db.insert(            roles).into("roles"          ),
-        db.insert(      permissions).into("permissions"    ),
-        db.insert(  rolePermissions).into("rolePermissions"),
-        db.insert(        userRoles).into("userRoles"      ),
-        // db.raw("ALTER SEQUENCE users_id_seq RESTART WITH 100"),
-        // db.raw("ALTER SEQUENCE roles_id_seq RESTART WITH 100"),
-        // db.raw("ALTER SEQUENCE permissions_id_seq RESTART WITH 100"),
+        insertUsers(db, users),
+        insertRoles(db, roles),
+        insertPermissions(db, permissions),
+        insertRolePermissions(db, rolePermissions),
+        insertUserRoles(db, userRoles),
     ]),
 }
