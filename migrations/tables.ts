@@ -1,4 +1,7 @@
 import { Knex } from "knex";
+import { database } from "../../core/database";
+
+const db = database();
 
 export const usersTable = (t:Knex.CreateTableBuilder) => {
     t.bigIncrements();
