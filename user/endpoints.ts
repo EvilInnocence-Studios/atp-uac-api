@@ -8,14 +8,11 @@ export const UserEndpoints = {
         passwordResetToken: {
             GET: get(UserHandlers.createPasswordResetToken),
         },
-        forgotPassword: {
-            POST: post(UserHandlers.forgotPassword),
-        },
         resetPassword: {
             POST: post(UserHandlers.resetPassword),
         },
-        forgotUserName: {
-            POST: post(UserHandlers.forgotUserName),
+        forgotLogin: {
+            POST: post(UserHandlers.forgotLogin),
         },
         ":userId": {
             GET: get(UserHandlers.get),

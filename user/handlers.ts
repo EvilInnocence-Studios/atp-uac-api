@@ -77,10 +77,6 @@ class UserHandlerClass  {
         return pipeTo(User.wishlists.remove, getParam("userId"), getParam("productId"))(args);
     }
 
-    public forgotPassword(...args:HandlerArgs<Query>):Promise<any> {
-        return pipeTo(User.forgotPassword, getBodyParam("userName"))(args);
-    }
-
     public resetPassword(...args:HandlerArgs<Query>):Promise<any> {
         return pipeTo(User.resetPassword, getBodyParam("token"), getBodyParam("newPassword"))(args);
     }
@@ -93,8 +89,8 @@ class UserHandlerClass  {
         return pipeTo(User.createPasswordResetToken, getQueryParam("userName"))(args);
     }
 
-    public forgotUserName(...args:HandlerArgs<Query>):Promise<any> {
-        return pipeTo(User.forgotUserName, getBodyParam("email"))(args);
+    public forgotLogin(...args:HandlerArgs<Query>):Promise<any> {
+        return pipeTo(User.forgotLogin, getBodyParam("email"))(args);
     }
 
     @CheckPermissions("user.update")
