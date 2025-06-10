@@ -17,6 +17,7 @@ import { CancelSubscription } from "../components/cancelSubscription";
 import { ForgotLogin } from "../components/forgotLogin";
 import { NewAccount } from '../components/newAccount';
 import { RoleChange } from "../components/roleChange";
+import { UserNotFound } from "../components/userNotFound";
 import { Role } from '../role/service';
 
 const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
@@ -85,20 +86,20 @@ export const User = {
     },
 
     forgotLogin: async (email:string):Promise<any> => {
-        const user = await User.loadBy("email")(email);
+        const user = await User.loadByInsensitive("email")(email);
     
         if(!user) {
             console.log("User not found");
-            return;
+            const html = render(UserNotFound, {email});
+            sendEmail(getAppConfig().emailTemplates.forgotLogin.subject, html, [email, getAppConfig().supportEmail]);
         }
 
         // Generate a key for the reset password link
-        const token = jwt.sign({email, userName: user.userName}, secret, {expiresIn: "1h"});
+        const token = jwt.sign({email: user.email, userName: user.userName}, secret, {expiresIn: "1h"});
 
         // Get the forgot login template
-        const html = render(ForgotLogin,  {email, userName: user.userName, token});
-        console.log(html);
-        sendEmail(getAppConfig().emailTemplates.forgotLogin.subject, html, [email]);
+        const html = render(ForgotLogin,  {email: user.email, userName: user.userName, token});
+        sendEmail(getAppConfig().emailTemplates.forgotLogin.subject, html, [email, getAppConfig().supportEmail]);
 
     },
 
