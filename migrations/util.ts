@@ -10,7 +10,7 @@ export const insertRoles = async (db: Knex, roles:Partial<IRole>[]):Promise<IRol
     db.insert(roles, "*").into("roles");
 
 export const insertPermissions = async (db: Knex, permissions: Partial<IPermission>[]): Promise<IPermission[]> =>
-    db.insert(permissions, "*").into("permissions");
+    db.insert(permissions, "*").into("permissions").onConflict().ignore();
 
 export const insertRolePermissions = async (db: Knex, rolePermissions: Array<{roleName: string, permissionName: string}>):Promise<void> => {
     const roleIds = await db.select("id").from("roles").whereIn("name", rolePermissions.map(r => r.roleName));
