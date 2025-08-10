@@ -2,6 +2,7 @@ import sha256 from 'crypto-js/sha256';
 import jwt from "jsonwebtoken";
 import { omit } from "ts-functional";
 import { getAppConfig, salt, secret } from '../../../config';
+import { Setting } from "../../common/setting/service";
 import { database } from '../../core/database';
 import { error403 } from '../../core/express/errors';
 import { basicCrudService, basicRelationService, twoWayRelationService } from '../../core/express/service/common';
@@ -31,12 +32,14 @@ const hashUserPassword = (user:any):any => user.password
 
 const afterUserCreate = async (user:IUser) => {
     //  Assign a default role
-    const roleId = getAppConfig().defaultUserRoleId;
+    const roleId = await Setting.get("defaultUserRole");
     await User.roles.add(user.id, roleId);
 
     // Send an account create email
     const html = render(NewAccount, {user});
-    sendEmail(getAppConfig().emailTemplates.newAccount.subject, html, [user.email, getAppConfig().supportEmail]);
+    const supportEmail = await Setting.get("supportEmail");
+    const subject = await Setting.get("newAccountSubject");
+    sendEmail(subject, html, [user.email, supportEmail]);
 }
 
 const db = database();
@@ -44,8 +47,10 @@ const db = database();
 const sendRoleChangeEmail = async (userId: string, roleId: string, action: "add" | "remove") => {
     const user:SafeUser = await User.loadById(userId);
     const role:IRole = await Role.loadById(roleId);
+    const supportEmail = await Setting.get("supportEmail");
+    const subject = await Setting.get("roleChangeSubject");
     const html = render(RoleChange, { role, action });
-    return sendEmail(getAppConfig().emailTemplates.roleChange.subject, html, [user.email, getAppConfig().supportEmail]);
+    return sendEmail(subject, html, [user.email, supportEmail]);
 };
 
 export const makeUserSafe = (user:IUser):SafeUser =>
@@ -87,11 +92,13 @@ export const User = {
 
     forgotLogin: async (email:string):Promise<any> => {
         const user = await User.loadByInsensitive("email")(email);
+        const supportEmail = await Setting.get("supportEmail");
+        const subject = await Setting.get("forgotLoginSubject");
     
         if(!user) {
             console.log("User not found");
             const html = render(UserNotFound, {email});
-            sendEmail(getAppConfig().emailTemplates.forgotLogin.subject, html, [email, getAppConfig().supportEmail]);
+            sendEmail(subject, html, [email, supportEmail]);
         }
 
         // Generate a key for the reset password link
@@ -99,7 +106,7 @@ export const User = {
 
         // Get the forgot login template
         const html = render(ForgotLogin,  {email: user.email, userName: user.userName, token});
-        sendEmail(getAppConfig().emailTemplates.forgotLogin.subject, html, [email, getAppConfig().supportEmail]);
+        sendEmail(subject, html, [email, supportEmail]);
 
     },
 
@@ -134,7 +141,9 @@ export const User = {
             .update({subscriptionId})
             .where({id: userId});
 
-        await User.roles.add(userId, getAppConfig().subscriptionRoleId);
+        const roleId = await Setting.get("subscriptionRole");
+
+        await User.roles.add(userId, roleId);
     },
 
     unsubscribe: async (userId:string):Promise<any> => {
@@ -145,7 +154,8 @@ export const User = {
             await subscription.cancel(subscriptionId);
         } else {
             const html = render(CancelSubscription, {user: await User.loadById(userId)});
-            sendEmail("Subscription Cancelled", html, [getAppConfig().supportEmail]);
+            const supportEmail = await Setting.get("supportEmail");
+            sendEmail("Subscription Cancelled", html, [supportEmail]);
         }
         
         
@@ -155,6 +165,7 @@ export const User = {
             .where({id: userId});
 
         // Remove the subscription role from the user
-        await User.roles.remove(userId, getAppConfig().subscriptionRoleId);
+        const roleId = await Setting.get("subscriptionRole");
+        await User.roles.remove(userId, roleId);
     },
 };
