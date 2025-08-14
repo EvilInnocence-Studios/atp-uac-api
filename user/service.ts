@@ -1,20 +1,17 @@
 import sha256 from 'crypto-js/sha256';
 import jwt from "jsonwebtoken";
 import { omit } from "ts-functional";
-import { getAppConfig, salt, secret } from '../../../config';
+import { salt, secret } from '../../../config';
 import { Setting } from "../../common/setting/service";
 import { database } from '../../core/database';
 import { error403 } from '../../core/express/errors';
 import { basicCrudService, basicRelationService, twoWayRelationService } from '../../core/express/service/common';
 import { loadBy, loadById, loadByInsensitive } from '../../core/express/util';
-import { subscription } from '../../core/paypal';
 import { render } from "../../core/render";
 import { sendEmail } from "../../core/sendEmail";
-import { IProduct } from "../../store-shared/product/types";
 import { IPermission } from '../../uac-shared/permissions/types';
 import { IRole } from '../../uac-shared/role/types';
 import { IUser, NewUser, SafeUser, UserUpdate } from '../../uac-shared/user/types';
-import { CancelSubscription } from "../components/cancelSubscription";
 import { ForgotLogin } from "../components/forgotLogin";
 import { NewAccount } from '../components/newAccount';
 import { RoleChange } from "../components/roleChange";
@@ -74,7 +71,6 @@ export const User = {
             sendRoleChangeEmail(userId, roleId, "removed" as "remove"),
     }),
     permissions: twoWayRelationService<IPermission>("userId", "roleId", "permissionId", "userRoles", "rolePermissions", "permissions"),
-    wishlists: basicRelationService<IProduct>("wishlists", "userId", "products", "productId"),
 
     getLoggedInUser: (token:string):string | null => {
         console.log(token);
@@ -134,38 +130,5 @@ export const User = {
         await db("users")
             .update({passwordHash: User.hashPassword(newPassword)})
             .where({id: userId});
-    },
-
-    subscribe: async (userId:string, subscriptionId:string):Promise<any> => {
-        await db("users")
-            .update({subscriptionId})
-            .where({id: userId});
-
-        const roleId = await Setting.get("subscriptionRole");
-
-        await User.roles.add(userId, roleId);
-    },
-
-    unsubscribe: async (userId:string):Promise<any> => {
-        // Get the subscription ID from the database
-        const subscriptionId = await User.loadById(userId).then(user => user.subscriptionId);
-        if(subscriptionId) {
-            // Cancel the subscription with PayPal
-            await subscription.cancel(subscriptionId);
-        } else {
-            const html = render(CancelSubscription, {user: await User.loadById(userId)});
-            const supportEmail = await Setting.get("supportEmail");
-            sendEmail("Subscription Cancelled", html, [supportEmail]);
-        }
-        
-        
-        // Remove the subscription ID from the database
-        await db("users")
-            .update({subscriptionId: null})
-            .where({id: userId});
-
-        // Remove the subscription role from the user
-        const roleId = await Setting.get("subscriptionRole");
-        await User.roles.remove(userId, roleId);
     },
 };

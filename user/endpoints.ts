@@ -31,17 +31,6 @@ export const UserEndpoints = {
             permission: {
                 GET: get(UserHandlers.getPermissions),
             },
-            wishlist: {
-                GET: get(UserHandlers.getWishlists),
-                POST: post(UserHandlers.addToWishlist),
-                ":productId": {
-                    DELETE: del(UserHandlers.removeFromWishlist),
-                }
-            },
-            subscription: {
-                POST: post(UserHandlers.subscribe),
-                DELETE: del(UserHandlers.unsubscribe),
-            }
         }
     },
 }

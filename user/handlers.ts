@@ -1,11 +1,10 @@
 import { pipeTo } from "ts-functional";
-import { prop } from "ts-functional";
 import { Query } from "../../core-shared/express/types";
 import { database } from '../../core/database';
-import { getBody, getBodyParam, getParam, getQueryParam, getUserPermissions } from "../../core/express/extractors";
+import { getBody, getBodyParam, getParam, getQueryParam } from "../../core/express/extractors";
 import { HandlerArgs } from '../../core/express/types';
 import { IUser, NewUser, SafeUser } from "../../uac-shared/user/types";
-import { CheckPermissions, hasPermission } from "../permission/util";
+import { CheckPermissions } from "../permission/util";
 import { User } from "./service";
 
 const db = database();
@@ -57,26 +56,6 @@ class UserHandlerClass  {
         return pipeTo(User.permissions.get, getParam("userId"))(args);
     }
 
-    @CheckPermissions("wishlist.view")
-    public async getWishlists (...args:HandlerArgs<Query>): Promise<any[]> {
-        const wishlistItems = await pipeTo(User.wishlists.get, getParam("userId"))(args);
-
-        const userPermissions = await getUserPermissions(args);
-        return hasPermission(["product.disabled"], userPermissions)
-            ? wishlistItems
-            : (wishlistItems).filter(prop("enabled"));
-    }
-
-    @CheckPermissions("wishlist.create")
-    public addToWishlist (...args:HandlerArgs<Partial<IUser>>): Promise<any> {
-        return pipeTo(User.wishlists.add, getParam("userId"), getBodyParam("productId"))(args);
-    }
-
-    @CheckPermissions("wishlist.delete")
-    public removeFromWishlist (...args:HandlerArgs<undefined>): Promise<any> {
-        return pipeTo(User.wishlists.remove, getParam("userId"), getParam("productId"))(args);
-    }
-
     public resetPassword(...args:HandlerArgs<Query>):Promise<any> {
         return pipeTo(User.resetPassword, getBodyParam("token"), getBodyParam("newPassword"))(args);
     }
@@ -91,16 +70,6 @@ class UserHandlerClass  {
 
     public forgotLogin(...args:HandlerArgs<Query>):Promise<any> {
         return pipeTo(User.forgotLogin, getBodyParam("email"))(args);
-    }
-
-    @CheckPermissions("user.update")
-    public subscribe (...args:HandlerArgs<Partial<IUser>>): Promise<any> {
-        return pipeTo(User.subscribe, getParam("userId"), getBodyParam("subscriptionId"))(args);
-    }
-
-    @CheckPermissions("user.update")
-    public unsubscribe (...args:HandlerArgs<undefined>): Promise<any> {
-        return pipeTo(User.unsubscribe, getParam("userId"))(args);
     }
 }
 
