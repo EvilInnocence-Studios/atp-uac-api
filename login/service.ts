@@ -20,7 +20,8 @@ export const Login = {
                 console.log("Passwords do not match");
                 throw error401;
             }
-        }).catch(() => {
+        }).catch((e:any) => {
+            console.log(e);
             console.log("No user found");
             throw error401;
         })
