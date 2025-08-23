@@ -23,6 +23,7 @@ const permissions = [
     { name: "user.update",          description: "Can update users"      },
     { name: "user.create",          description: "Can create users"      },
     { name: "user.delete",          description: "Can delete users"      },
+    { name: "user.admin",           description: "Can administer users"  },
     { name: "role.view",            description: "Can view roles"        },
     { name: "role.update",          description: "Can update roles"      },
     { name: "role.create",          description: "Can create roles"      },
@@ -38,6 +39,7 @@ const rolePermissions = [
     { roleName: "SuperUser", permissionName: "user.update" },
     { roleName: "SuperUser", permissionName: "user.create" },
     { roleName: "SuperUser", permissionName: "user.delete" },
+    { roleName: "SuperUser", permissionName: "user.admin" },
     { roleName: "SuperUser", permissionName: "role.view" },
     { roleName: "SuperUser", permissionName: "role.update" },
     { roleName: "SuperUser", permissionName: "role.create" },
@@ -50,8 +52,8 @@ const rolePermissions = [
 ];
 
 export const userRoles = [
-    { userName: "admin", roleName: "SuperUser" },
-    { userName: "public", roleName: "Public" },
+    { userName: "admin",  roleName: "SuperUser" },
+    { userName: "public", roleName: "Public"    },
 ];
 
 export const init:IMigration = {
@@ -71,11 +73,11 @@ export const init:IMigration = {
         .createTable("rolePermissions", rolePermissionsTable)
         .createTable("userRoles", userRolesTable),
     priority: 0,
-    initData: () => Promise.all([
-        insertUsers(db, users),
-        insertRoles(db, roles),
-        insertPermissions(db, permissions),
-        insertRolePermissions(db, rolePermissions),
-        insertUserRoles(db, userRoles),
-    ]),
+    initData: async () => {
+        await insertUsers(db, users);
+        await insertRoles(db, roles);
+        await insertPermissions(db, permissions);
+        await insertRolePermissions(db, rolePermissions);
+        await insertUserRoles(db, userRoles);
+    },
 }
