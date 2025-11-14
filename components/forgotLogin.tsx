@@ -1,5 +1,6 @@
 import React from 'react';
 import { getAppConfig } from '../../../config';
+import { Setting } from '../../common/setting/service';
 
 export declare interface IForgotLoginParams {
     email: string;
@@ -7,12 +8,13 @@ export declare interface IForgotLoginParams {
     token: string;
 }
 
-export const ForgotLogin = ({email, userName, token}:IForgotLoginParams) => {
+export const ForgotLogin = async ({email, userName, token}:IForgotLoginParams) => {
     const url = `${getAppConfig().publicHost}/reset-password?token=${token}`;
+    const siteName = await Setting.get("siteName");
 
     return <>
         <div>
-            <h1>Evilinnocence Studios</h1>
+            <h1>{siteName}</h1>
             <p>
                 Username for {email}:<br/>
                 <b>{userName}</b>

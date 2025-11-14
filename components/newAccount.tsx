@@ -1,17 +1,20 @@
 import React from 'react';
-import {IUser} from "../../uac-shared/user/types";
+import { Setting } from '../../common/setting/service';
+import { IUser } from "../../uac-shared/user/types";
 
 export declare interface INewAccountParams {
     user: IUser;
 };
 
-export const NewAccount = ({user}:INewAccountParams) => {
+export const NewAccount = async ({user}:INewAccountParams) => {
+    const siteName = await Setting.get("siteName");
+
     return <>
         <div>
-            <h1>Evilinnocence Studios</h1>
+            <h1>{siteName}</h1>
             <p>
                 Account Created<br/>
-                Welcome to Evilinnocence Studios, {user.userName}!
+                Welcome to {siteName}, {user.userName}!
             </p>
         </div>
     </>;
