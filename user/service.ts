@@ -31,9 +31,10 @@ const afterUserCreate = async (user:IUser) => {
     //  Assign a default role
     const roleId = await Setting.get("defaultUserRole");
     await User.roles.add(user.id, roleId);
+    const siteName = await Setting.get("siteName");
 
     // Send an account create email
-    const html = render(NewAccount, {user});
+    const html = render(NewAccount, {user, siteName});
     const supportEmail = await Setting.get("supportEmail");
     const subject = await Setting.get("newAccountSubject");
     sendEmail(subject, html, [user.email, supportEmail]);
@@ -46,7 +47,8 @@ const sendRoleChangeEmail = async (userId: string, roleId: string, action: "add"
     const role:IRole = await Role.loadById(roleId);
     const supportEmail = await Setting.get("supportEmail");
     const subject = await Setting.get("roleChangeSubject");
-    const html = render(RoleChange, { role, action });
+    const siteName = await Setting.get("siteName");
+    const html = render(RoleChange, { role, action, siteName });
     return sendEmail(subject, html, [user.email, supportEmail]);
 };
 
@@ -90,10 +92,11 @@ export const User = {
         const user = await User.loadByInsensitive("email")(email);
         const supportEmail = await Setting.get("supportEmail");
         const subject = await Setting.get("forgotLoginSubject");
+        const siteName = await Setting.get("siteName");
     
         if(!user) {
             console.log("User not found");
-            const html = render(UserNotFound, {email});
+            const html = render(UserNotFound, {email, siteName});
             sendEmail(subject, html, [email, supportEmail]);
         }
 
@@ -101,7 +104,7 @@ export const User = {
         const token = jwt.sign({email: user.email, userName: user.userName}, secret, {expiresIn: "1h"});
 
         // Get the forgot login template
-        const html = render(ForgotLogin,  {email: user.email, userName: user.userName, token});
+        const html = render(ForgotLogin,  {email: user.email, userName: user.userName, token, siteName});
         sendEmail(subject, html, [email, supportEmail]);
 
     },

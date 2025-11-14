@@ -6,11 +6,11 @@ export declare interface IForgotLoginParams {
     email: string;
     userName: string;
     token: string;
+    siteName: string;
 }
 
-export const ForgotLogin = async ({email, userName, token}:IForgotLoginParams) => {
+export const ForgotLogin = ({email, userName, token, siteName}:IForgotLoginParams) => {
     const url = `${getAppConfig().publicHost}/reset-password?token=${token}`;
-    const siteName = await Setting.get("siteName");
 
     return <>
         <div>

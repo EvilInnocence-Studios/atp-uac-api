@@ -5,11 +5,10 @@ import { IRole } from '../../uac-shared/role/types';
 export declare interface IRoleChangeParams {
     role: IRole;
     action: "add" | "remove";
+    siteName: string;
 }
 
-export const RoleChange = async ({role, action}:IRoleChangeParams) => {
-    const siteName = await Setting.get("siteName");
-
+export const RoleChange = ({role, action, siteName}:IRoleChangeParams) => {
     return <>
         <div>
             <h1>{siteName}</h1>

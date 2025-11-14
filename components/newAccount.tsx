@@ -4,11 +4,10 @@ import { IUser } from "../../uac-shared/user/types";
 
 export declare interface INewAccountParams {
     user: IUser;
+    siteName: string;
 };
 
-export const NewAccount = async ({user}:INewAccountParams) => {
-    const siteName = await Setting.get("siteName");
-
+export const NewAccount = ({user, siteName}:INewAccountParams) => {
     return <>
         <div>
             <h1>{siteName}</h1>

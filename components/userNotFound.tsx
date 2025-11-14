@@ -3,11 +3,10 @@ import { Setting } from '../../common/setting/service';
 
 export declare interface IForgotLoginParams {
     email: string;
+    siteName: string;
 }
 
-export const UserNotFound = async ({email}:IForgotLoginParams) => {
-    const siteName = await Setting.get("siteName");
-
+export const UserNotFound = ({email, siteName}:IForgotLoginParams) => {
     return <>
         <div>
             <h1>{siteName}</h1>
