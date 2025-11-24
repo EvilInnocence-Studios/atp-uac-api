@@ -11,7 +11,6 @@ export const usersTable = (t:Knex.CreateTableBuilder) => {
     t.string("firstName"          ).notNullable().defaultTo("");
     t.string("lastName"           ).notNullable().defaultTo("");
     t.string("suffix"             ).notNullable().defaultTo("");
-    t.string("subscriptionId", 255).unique();
     t.string("passwordHash",    64).notNullable();
     t.boolean("mustUpdatePassword").notNullable();
     t.dateTime("createdAt"        ).notNullable().defaultTo(db.fn.now());
