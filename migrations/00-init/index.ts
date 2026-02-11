@@ -57,7 +57,7 @@ export const userRoles = [
 ];
 
 export const init: IMigration = {
-    name: "init-uac",
+    name: "init",
     module: "uac",
     description: "Install the uac module",
     order: 0,
