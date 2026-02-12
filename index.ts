@@ -1,6 +1,6 @@
-import { setupMigrations as uacSetup } from "./migrations";
+import { init } from "./migrations/00-init";
 
-export {apiConfig} from "./endpoints";
+export { apiConfig } from "./endpoints";
 
-export const migrations = [];
-export const setupMigrations = uacSetup;
+export const migrations = [init];
+export const setupMigrations = [init];
