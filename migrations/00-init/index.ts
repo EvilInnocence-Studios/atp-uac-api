@@ -57,9 +57,10 @@ export const userRoles = [
 ];
 
 export const init: IMigration = {
-    name: "init-uac",
+    name: "init",
     module: "uac",
     description: "Install the uac module",
+    version: "1.0.0",
     order: 0,
     down: () => db.schema
         // Drop tables in reverse order to ensure foreign key constraints don't stop things
