@@ -77,7 +77,7 @@ export const CheckOwnership = (...args:any[]) => {
         }
 
         // Get the user id from the login token
-        const userId:number = (jwt.verify(token, secret) as jwt.JwtPayload).userId;
+        const userId:number = (jwt.verify(token, secret()) as jwt.JwtPayload).userId;
         if(!userId) {
             throw error403;
         }

@@ -24,7 +24,7 @@ const removePassword = omit<Partial<UserUpdate>, "password">("password");
 // TODO: Figure out the type for this
 //const hashUserPassword = (user:NewUser | UserUpdate):Partial<IUser> => user.password
 const hashUserPassword = (user:any):any => user.password
-    ? {...removePassword(user), passwordHash: sha256(salt + user.password).toString() }
+    ? {...removePassword(user), passwordHash: sha256(salt() + user.password).toString() }
     : removePassword(user);
 
 const afterUserCreate = async (user:IUser) => {
@@ -77,15 +77,15 @@ export const User = {
     getLoggedInUser: (token:string):string | null => {
         console.log(token);
         if(!token) return null;
-        const userId = jwt.verify(token, secret) as string;
+        const userId = jwt.verify(token, secret()) as string;
         return userId;
     },
 
     makeSafe: makeUserSafe,
-    hashPassword: (str:string) => sha256(salt + str).toString(),
+    hashPassword: (str:string) => sha256(salt() + str).toString(),
 
     createPasswordResetToken: async (userName:string):Promise<string> => {
-        return jwt.sign({userName}, secret, {expiresIn: "1h"});
+        return jwt.sign({userName}, secret(), {expiresIn: "1h"});
     },
 
     forgotLogin: async (email:string):Promise<any> => {
@@ -101,7 +101,7 @@ export const User = {
         }
 
         // Generate a key for the reset password link
-        const token = jwt.sign({email: user.email, userName: user.userName}, secret, {expiresIn: "1h"});
+        const token = jwt.sign({email: user.email, userName: user.userName}, secret(), {expiresIn: "1h"});
 
         // Get the forgot login template
         const html = render(ForgotLogin,  {email: user.email, userName: user.userName, token, siteName});
@@ -111,7 +111,7 @@ export const User = {
 
     resetPassword: async (token:string, newPassword: string):Promise<any> => {
         // Verify the token
-        const {userName} = jwt.verify(token, secret) as {userName: string};
+        const {userName} = jwt.verify(token, secret()) as {userName: string};
 
         if(!userName) {
             throw error403;

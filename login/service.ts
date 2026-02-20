@@ -32,7 +32,7 @@ export const Login = {
             return {
                 user,
                 permissions,
-                loginToken: jwt.sign({userId: user.id}, secret),
+                loginToken: jwt.sign({userId: user.id}, secret()),
             };
         })
     },
