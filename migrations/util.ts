@@ -1,3 +1,4 @@
+import { ISetting } from "@common-shared/setting/types";
 import { Knex } from "knex";
 import { IPermission } from "../../uac-shared/permissions/types";
 import { IRole } from "../../uac-shared/role/types";

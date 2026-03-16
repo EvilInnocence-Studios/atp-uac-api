@@ -4,6 +4,7 @@ import { User } from "../../user/service";
 import { permissionsTable, rolePermissionsTable, rolesTable, userRolesTable, usersTable } from "../tables";
 import { insertRolePermissions, insertUsers, insertUserRoles, insertRoles, insertPermissions } from "../util";
 import { IMigration } from "@core/dbMigrations";
+import { insertSettings } from "@common/migrations/util";
 
 const db = database();
 
@@ -83,5 +84,11 @@ export const init: IMigration = {
         await insertPermissions(db, permissions);
         await insertRolePermissions(db, rolePermissions);
         await insertUserRoles(db, userRoles);
+
+        // Get the id of the Public role
+        const publicRole = (await db.select("*").from("roles").where("name", "=", "Public")).at(0);
+        if (publicRole) {
+            await insertSettings(db, [{key: "defaultUserRole", value: publicRole.id.toString()}]);
+        }
     },
 }
