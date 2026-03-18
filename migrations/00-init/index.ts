@@ -62,7 +62,7 @@ export const init: IMigration = {
     module: "uac",
     description: "Install the uac module",
     version: "1.0.0",
-    order: 0,
+    order: 2,
     down: () => db.schema
         // Drop tables in reverse order to ensure foreign key constraints don't stop things
         .dropTableIfExists("userRoles")
