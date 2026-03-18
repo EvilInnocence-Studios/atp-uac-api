@@ -3,8 +3,8 @@ import { database } from "../../../core/database";
 import { User } from "../../user/service";
 import { permissionsTable, rolePermissionsTable, rolesTable, userRolesTable, usersTable } from "../tables";
 import { insertRolePermissions, insertUsers, insertUserRoles, insertRoles, insertPermissions } from "../util";
-import { IMigration } from "@core/dbMigrations";
-import { insertSettings } from "@common/migrations/util";
+import { IMigration } from "../../../core/dbMigrations";
+import { insertSettings } from "../../../common/migrations/util";
 
 const db = database();
 
