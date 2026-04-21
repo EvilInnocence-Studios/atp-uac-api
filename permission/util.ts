@@ -4,7 +4,7 @@ import { secret } from "../../../config";
 import { database } from "../../core/database";
 import { error403 } from "../../core/express/errors";
 import { getHeader, getLoggedInUser, getParam, getUserPermissions } from "../../core/express/extractors";
-import { Product } from "../../store/product/service";
+import { runPermissionPlugins } from "./registry";
 import { IPermission } from "../../uac-shared/permissions/types";
 
 const db = database();
@@ -48,16 +48,8 @@ export const CheckPermissions = (...permissions: string[]) => {
                 throw error403;
             }
 
-            // If this is a product specific endpoint and the product is not enabled, make sure that the user can view disabled products
-            const productId = getParam<string>("productId")(funcArgs);
-            const canViewDisabledProducts = userPermissions.find(p => p.name === "product.disabled");
-            if (productId && !canViewDisabledProducts) {
-                const product = await Product.loadById(productId);
-                if (!product || !product.enabled) {
-                    console.log(`User does not have permission to access disabled product ${productId}`);
-                    throw error403;
-                }
-            }
+            // Run all registered permission plugins
+            await runPermissionPlugins(userPermissions, funcArgs);
 
             // Call the original method if permission is granted
             return originalMethod(...funcArgs);
