@@ -1,4 +1,4 @@
-import { init } from "./migrations/00-init";
+import { init } from "../uac/migrations/00-init";
 
 export { apiConfig } from "./endpoints";
 
