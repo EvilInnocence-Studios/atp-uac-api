@@ -5,9 +5,6 @@ export const UserEndpoints = {
     user: {
         GET: get(UserHandlers.search),
         POST: post(UserHandlers.create),
-        passwordResetToken: {
-            GET: get(UserHandlers.createPasswordResetToken),
-        },
         resetPassword: {
             POST: post(UserHandlers.resetPassword),
         },

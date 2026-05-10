@@ -64,10 +64,6 @@ class UserHandlerClass  {
         return pipeTo(User.resetPasswordByUser, getParam("userId"), getBodyParam("oldPassword"), getBodyParam("newPassword"))(args);
     }
 
-    public createPasswordResetToken(...args:HandlerArgs<Query>):Promise<string> {
-        return pipeTo(User.createPasswordResetToken, getQueryParam("userName"))(args);
-    }
-
     public forgotLogin(...args:HandlerArgs<Query>):Promise<any> {
         return pipeTo(User.forgotLogin, getBodyParam("email"))(args);
     }

@@ -84,10 +84,6 @@ export const User = {
     makeSafe: makeUserSafe,
     hashPassword: (str:string) => sha256(salt() + str).toString(),
 
-    createPasswordResetToken: async (userName:string):Promise<string> => {
-        return jwt.sign({userName}, secret(), {expiresIn: "1h"});
-    },
-
     forgotLogin: async (email:string):Promise<any> => {
         const user = await User.loadByInsensitive("email")(email);
         const supportEmail = await Setting.get("supportEmail");
