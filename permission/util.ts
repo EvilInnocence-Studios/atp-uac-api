@@ -10,7 +10,7 @@ import { IPermission } from "../../uac-shared/permissions/types";
 const db = database();
 
 export const hasPermission = (permissions:string[], userPermissions:IPermission[]) =>
-    intersection(permissions, userPermissions.map(p => p.name)).length > 0;
+    intersection(permissions, userPermissions.map(p => p.name)).length === permissions.length;
 
 export const CheckPermissions = (...permissions: string[]) => {
     return function (...args:any[]): void {
