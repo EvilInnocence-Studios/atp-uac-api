@@ -16,20 +16,21 @@ export const users = [
 
 const roles = [
     { name: "SuperUser", description: "SuperUser role" },
-    { name: "Public", description: "Non-logged in user" },
+    { name: "Public",    description: "Non-logged in user" },
 ];
 
 const permissions = [
-    { name: "user.view", description: "Can view users" },
-    { name: "user.update", description: "Can update users" },
-    { name: "user.create", description: "Can create users" },
-    { name: "user.delete", description: "Can delete users" },
-    { name: "user.admin", description: "Can administer users" },
-    { name: "role.view", description: "Can view roles" },
-    { name: "role.update", description: "Can update roles" },
-    { name: "role.create", description: "Can create roles" },
-    { name: "role.delete", description: "Can delete roles" },
-    { name: "permission.view", description: "Can view permissions" },
+    { name: "user.view",         description: "Can view users" },
+    { name: "user.update",       description: "Can update users" },
+    { name: "user.create",       description: "Can create users" },
+    { name: "user.delete",       description: "Can delete users" },
+    { name: "user.admin",        description: "Can administer users" },
+    { name: "role.view",         description: "Can view roles" },
+    { name: "role.update",       description: "Can update roles" },
+    { name: "role.create",       description: "Can create roles" },
+    { name: "role.delete",       description: "Can delete roles" },
+    { name: "role.assign",       description: "Can assign roles"},
+    { name: "permission.view",   description: "Can view permissions" },
     { name: "permission.update", description: "Can update permissions" },
     { name: "permission.create", description: "Can create permissions" },
     { name: "permission.delete", description: "Can delete permissions" },
@@ -45,11 +46,12 @@ const rolePermissions = [
     { roleName: "SuperUser", permissionName: "role.update" },
     { roleName: "SuperUser", permissionName: "role.create" },
     { roleName: "SuperUser", permissionName: "role.delete" },
+    { roleName: "SuperUser", permissionName: "role.assign" },
     { roleName: "SuperUser", permissionName: "permission.view" },
     { roleName: "SuperUser", permissionName: "permission.update" },
     { roleName: "SuperUser", permissionName: "permission.create" },
     { roleName: "SuperUser", permissionName: "permission.delete" },
-    { roleName: "Public", permissionName: "user.create" },
+    { roleName: "Public",    permissionName: "user.create" },
 ];
 
 export const userRoles = [

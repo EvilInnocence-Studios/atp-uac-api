@@ -41,12 +41,12 @@ class UserHandlerClass  {
     }
 
 
-    @CheckPermissions("user.update")
+    @CheckPermissions("role.assign")
     public addRole (...args:HandlerArgs<Partial<IUser>>): Promise<any> {
         return pipeTo(User.roles.add, getParam("userId"), getBodyParam("roleId"))(args);
     }
 
-    @CheckPermissions("user.update")
+    @CheckPermissions("role.assign")
     public removeRole (...args:HandlerArgs<undefined>): Promise<any> {
         return pipeTo(User.roles.remove, getParam("userId"), getParam("roleId"))(args);
     }
