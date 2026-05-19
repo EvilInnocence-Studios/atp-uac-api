@@ -1,4 +1,5 @@
 import sha256 from 'crypto-js/sha256';
+import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 import { omit } from "ts-functional";
 import { salt, secret } from '../../../config';
@@ -22,9 +23,9 @@ const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordH
 const removePassword = omit<Partial<UserUpdate>, "password">("password");
 
 // TODO: Figure out the type for this
-//const hashUserPassword = (user:NewUser | UserUpdate):Partial<IUser> => user.password
-const hashUserPassword = (user:any):any => user.password
-    ? {...removePassword(user), passwordHash: sha256(salt() + user.password).toString() }
+// const hashUserPassword = (user:NewUser | UserUpdate):Partial<IUser> => user.password
+const hashUserPassword = async (user:any):Promise<any> => user.password
+    ? {...removePassword(user), passwordHash: await bcrypt.hash(user.password, 10), hashAlgorithm: "bcrypt" }
     : removePassword(user);
 
 const afterUserCreate = async (user:IUser) => {
@@ -82,7 +83,14 @@ export const User = {
     },
 
     makeSafe: makeUserSafe,
-    hashPassword: (str:string) => sha256(salt() + str).toString(),
+    legacyHashPassword: (str:string) => sha256(salt() + str).toString(),
+    verifyPassword: async (password:string, user:IUser):Promise<boolean> => {
+        if (user.hashAlgorithm === "bcrypt") {
+            return bcrypt.compare(password, user.passwordHash);
+        } else {
+            return User.legacyHashPassword(password) === user.passwordHash;
+        }
+    },
 
     forgotLogin: async (email:string):Promise<any> => {
         const user = await User.loadByInsensitive("email")(email);
@@ -91,18 +99,17 @@ export const User = {
         const siteName = await Setting.get("siteName");
     
         if(!user) {
-            console.log("User not found");
+            // Send user not found email
             const html = render(UserNotFound, {email, siteName});
             sendEmail(subject, html, [email, supportEmail]);
+        } else {
+            // Generate a key for the reset password link
+            const token = jwt.sign({email: user.email, userName: user.userName}, secret(), {expiresIn: "1h"});
+
+            // Get the forgot login template
+            const html = render(ForgotLogin,  {email: user.email, userName: user.userName, token, siteName});
+            sendEmail(subject, html, [email, supportEmail]);
         }
-
-        // Generate a key for the reset password link
-        const token = jwt.sign({email: user.email, userName: user.userName}, secret(), {expiresIn: "1h"});
-
-        // Get the forgot login template
-        const html = render(ForgotLogin,  {email: user.email, userName: user.userName, token, siteName});
-        sendEmail(subject, html, [email, supportEmail]);
-
     },
 
     resetPassword: async (token:string, newPassword: string):Promise<any> => {
@@ -114,20 +121,22 @@ export const User = {
         }
 
         // Update the user with the new password
+        const passwordHash = await bcrypt.hash(newPassword, 10);
         await db("users")
-            .update({passwordHash: User.hashPassword(newPassword)})
+            .update({passwordHash, hashAlgorithm: "bcrypt"})
             .where({userName});
     },
 
     resetPasswordByUser: async (userId:string, oldPassword:string, newPassword:string):Promise<any> => {
         // Get the user from the database
         const user = await User.loadUnsafe(userId);
-        if(user.passwordHash !== User.hashPassword(oldPassword)) {
+        if(!(await User.verifyPassword(oldPassword, user))) {
             throw error403;
         }
         // Update the user with the new password
+        const passwordHash = await bcrypt.hash(newPassword, 10);
         await db("users")
-            .update({passwordHash: User.hashPassword(newPassword)})
+            .update({passwordHash, hashAlgorithm: "bcrypt"})
             .where({id: userId});
     },
 };

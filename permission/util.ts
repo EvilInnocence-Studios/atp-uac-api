@@ -38,18 +38,8 @@ export const CheckPermissions = (...permissions: string[]) => {
                 throw error403;
             }
 
-            // If this is a user specific endpoint, make sure the user has the same userId
-            // However, if the user has the "user.admin" permission, they can access any user
-            const pathId = getParam("userId")(funcArgs);
-            const isUserAdmin = userPermissions.find(p => p.name === "user.admin");
-            const idsMatch = `${pathId}` === `${userId}`;
-            if (pathId && !isUserAdmin && !idsMatch) {
-                console.log(`User does not have permission to access userId ${pathId}`);
-                throw error403;
-            }
-
             // Run all registered permission plugins
-            await runPermissionPlugins(userPermissions, funcArgs);
+            await runPermissionPlugins(userPermissions, funcArgs, userId);
 
             // Call the original method if permission is granted
             return originalMethod(...funcArgs);

@@ -1,17 +1,18 @@
+import bcrypt from "bcrypt";
 import dayjs from "dayjs";
-import { database } from "../../../core/database";
-import { User } from "../../user/service";
-import { permissionsTable, rolePermissionsTable, rolesTable, userRolesTable, usersTable } from "../tables";
-import { insertRolePermissions, insertUsers, insertUserRoles, insertRoles, insertPermissions } from "../util";
-import { IMigration } from "../../../core/dbMigrations";
 import { insertSettings } from "../../../common/migrations/util";
+import { database } from "../../../core/database";
+import { IMigration } from "../../../core/dbMigrations";
+import { permissionsTable, rolePermissionsTable, rolesTable, userRolesTable, usersTable } from "../tables";
+import { insertPermissions, insertRolePermissions, insertRoles, insertUserRoles, insertUsers } from "../util";
+import { IUser } from "@uac-shared/user/types";
 
 const db = database();
 
 const userBlanks = { firstName: "", lastName: "", prefix: "", suffix: "", createdAt: dayjs().toISOString() };
-export const users = [
-    { userName: "admin", email: "admin@example.com", passwordHash: User.hashPassword("admin"), mustUpdatePassword: true, ...userBlanks },
-    { userName: "public", email: "", passwordHash: "", mustUpdatePassword: false, ...userBlanks },
+export const users:Partial<IUser>[] = [
+    { userName: "admin", email: "admin@example.com", passwordHash: bcrypt.hashSync("admin", 10), hashAlgorithm: "bcrypt", mustUpdatePassword: true, ...userBlanks },
+    { userName: "public", email: "", passwordHash: "", hashAlgorithm: "bcrypt", mustUpdatePassword: false, ...userBlanks },
 ];
 
 const roles = [

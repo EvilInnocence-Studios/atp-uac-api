@@ -12,6 +12,7 @@ export const usersTable = (t:Knex.CreateTableBuilder) => {
     t.string("lastName"           ).notNullable().defaultTo("");
     t.string("suffix"             ).notNullable().defaultTo("");
     t.string("passwordHash",    64).notNullable();
+    t.string("hashAlgorithm",   10).notNullable().defaultTo("bcrypt");
     t.boolean("mustUpdatePassword").notNullable();
     t.dateTime("createdAt"        ).notNullable().defaultTo(db.fn.now());
 };
