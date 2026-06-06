@@ -41,7 +41,11 @@ export const Login = {
             return {
                 user,
                 permissions,
-                loginToken: jwt.sign({userId: user.id}, secret()),
+                loginToken: jwt.sign({
+                    userId: user.id,
+                    uncached: permissions.some(p => p.name === "api.uncached"),
+                    type: "auth",
+                }, secret()),
             };
         })
     },

@@ -1,7 +1,7 @@
-import { error403 } from "@core/express/errors";
-import { getParam } from "@core/express/extractors";
-import { FieldRegistry } from "@core/express/util";
-import { IPermission } from "@uac-shared/permissions/types";
+import { error403 } from "../core/express/errors";
+import { getParam } from "../core/express/extractors";
+import { FieldRegistry } from "../core/express/util";
+import { IPermission } from "../uac-shared/permissions/types";
 import { init } from "../uac/migrations/00-init";
 import { addHashAlgorithm } from "./migrations/01-addHashAlgorithm";
 import { registerPermissionPlugin } from "./permission/registry";

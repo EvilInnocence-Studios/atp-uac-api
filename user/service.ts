@@ -104,7 +104,11 @@ export const User = {
             sendEmail(subject, html, [email, supportEmail]);
         } else {
             // Generate a key for the reset password link
-            const token = jwt.sign({email: user.email, userName: user.userName}, secret(), {expiresIn: "1h"});
+            const token = jwt.sign(
+                {email: user.email, userName: user.userName, type: "reset"},
+                secret(),
+                {expiresIn: "1h"}
+            );
 
             // Get the forgot login template
             const html = render(ForgotLogin,  {email: user.email, userName: user.userName, token, siteName});

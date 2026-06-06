@@ -21,6 +21,7 @@ const roles = [
 ];
 
 const permissions = [
+    { name: "api.uncached",      description: "Can access the api uncached"},
     { name: "user.view",         description: "Can view users" },
     { name: "user.update",       description: "Can update users" },
     { name: "user.create",       description: "Can create users" },
@@ -38,6 +39,7 @@ const permissions = [
 ];
 
 const rolePermissions = [
+    { roleName: "SuperUser", permissionName: "api.uncached" },
     { roleName: "SuperUser", permissionName: "user.view" },
     { roleName: "SuperUser", permissionName: "user.update" },
     { roleName: "SuperUser", permissionName: "user.create" },

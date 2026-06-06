@@ -1,5 +1,5 @@
-import { database } from "@core/database";
-import { IMigration } from "@core/dbMigrations";
+import { database } from "../../core/database";
+import { IMigration } from "../../core/dbMigrations";
 
 const db = database();
 
