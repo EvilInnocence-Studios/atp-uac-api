@@ -9,11 +9,11 @@ import { IPermission } from "../../uac-shared/permissions/types";
 
 const db = database();
 
-export const hasPermission = (permissions:string[], userPermissions:IPermission[]) =>
+export const hasPermission = (permissions: string[], userPermissions: IPermission[]) =>
     intersection(permissions, userPermissions.map(p => p.name)).length === permissions.length;
 
 export const CheckPermissions = (...permissions: string[]) => {
-    return function (...args:any[]): void {
+    return function (...args: any[]): void {
         const descriptor = args[2];
         const originalMethod = descriptor.value;
 
@@ -21,13 +21,13 @@ export const CheckPermissions = (...permissions: string[]) => {
             let userId = await getLoggedInUser(funcArgs);
 
             // If no user id is found, throw a 403 error
-            if(!userId) {
+            if (!userId) {
                 throw error403;
             }
 
             // Get the user permissions from the database
             const userPermissions = await getUserPermissions(funcArgs);
-            if(!userPermissions) {
+            if (!userPermissions) {
                 console.log("No user permissions found");
                 throw error403;
             }
@@ -39,7 +39,7 @@ export const CheckPermissions = (...permissions: string[]) => {
             }
 
             // Run all registered permission plugins
-            await runPermissionPlugins(userPermissions, funcArgs, userId);
+            await runPermissionPlugins(userPermissions, funcArgs, userId, permissions);
 
             // Call the original method if permission is granted
             return originalMethod(...funcArgs);
@@ -47,7 +47,7 @@ export const CheckPermissions = (...permissions: string[]) => {
     };
 }
 
-export const CheckOwnership = (...args:any[]) => {
+export const CheckOwnership = (...args: any[]) => {
     const descriptor = args[2];
     const originalMethod = descriptor.value;
 
@@ -59,8 +59,8 @@ export const CheckOwnership = (...args:any[]) => {
         }
 
         // Get the user id from the login token
-        const userId:number = (jwt.verify(token, secret()) as jwt.JwtPayload).userId;
-        if(!userId) {
+        const userId: number = (jwt.verify(token, secret()) as jwt.JwtPayload).userId;
+        if (!userId) {
             throw error403;
         }
         console.log(userId);
