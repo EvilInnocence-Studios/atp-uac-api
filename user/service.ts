@@ -2,7 +2,7 @@ import sha256 from 'crypto-js/sha256';
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 import { omit } from "ts-functional";
-import { salt, secret } from '../../../config';
+import { salt, secret } from '../../core/config';
 import { Setting } from "../../common/setting/service";
 import { database } from '../../core/database';
 import { error403 } from '../../core/express/errors';

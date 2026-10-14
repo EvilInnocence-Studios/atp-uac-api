@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { intersection } from "ts-functional";
-import { secret } from "../../../config";
+import { secret } from "../../core/config";
 import { database } from "../../core/database";
 import { error403 } from "../../core/express/errors";
 import { getHeader, getLoggedInUser, getParam, getUserPermissions } from "../../core/express/extractors";

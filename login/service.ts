@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { salt, secret } from "../../../config";
+import { salt, secret } from "../../core/config";
 import { database } from "../../core/database";
 import { error401 } from "../../core/express/errors";
 import { ILoginResponse } from "../../uac-shared/login/types";

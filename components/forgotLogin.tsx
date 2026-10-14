@@ -1,5 +1,5 @@
 import React from 'react';
-import { getAppConfig } from '../../../config';
+import { getAppConfig } from '../../core/config';
 import { Setting } from '../../common/setting/service';
 
 export declare interface IForgotLoginParams {
