@@ -9,7 +9,7 @@ import { User } from "../user/service";
 export const Login = {
     login: async (userName: string, password:string):Promise<ILoginResponse> => {
         console.log(`Logging in ${userName} with password ${password}`);
-        return User.loadUnsafeByNameInsensitive(userName).then(async user => {
+        return User.loadUnsafeByNameInsensitive(userName.trim()).then(async user => {
             console.log("User", user);
             console.log("Salt", salt);
             console.log("Stored password", user.passwordHash);

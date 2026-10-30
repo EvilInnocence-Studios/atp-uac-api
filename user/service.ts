@@ -19,14 +19,21 @@ import { RoleChange } from "../components/roleChange";
 import { UserNotFound } from "../components/userNotFound";
 import { Role } from '../role/service';
 
-const makeSafe = (user:IUser):SafeUser => omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
+const makeSafe = (user:IUser):SafeUser => user ? omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser : undefined as any;
 const removePassword = omit<Partial<UserUpdate>, "password">("password");
 
 // TODO: Figure out the type for this
 // const hashUserPassword = (user:NewUser | UserUpdate):Partial<IUser> => user.password
-const hashUserPassword = async (user:any):Promise<any> => user.password
-    ? {...removePassword(user), passwordHash: await bcrypt.hash(user.password, 10), hashAlgorithm: "bcrypt" }
-    : removePassword(user);
+const hashUserPassword = async (user:any):Promise<any> => {
+    const trimmed = {
+        ...user,
+        ...(typeof user.userName === "string" ? { userName: user.userName.trim() } : {}),
+        ...(typeof user.email === "string" ? { email: user.email.trim() } : {}),
+    };
+    return trimmed.password
+        ? {...removePassword(trimmed), passwordHash: await bcrypt.hash(trimmed.password, 10), hashAlgorithm: "bcrypt" }
+        : removePassword(trimmed);
+};
 
 const afterUserCreate = async (user:IUser) => {
     //  Assign a default role
@@ -38,7 +45,7 @@ const afterUserCreate = async (user:IUser) => {
     const html = render(NewAccount, {user, siteName});
     const supportEmail = await Setting.get("supportEmail");
     const subject = await Setting.get("newAccountSubject");
-    sendEmail(subject, html, [user.email, supportEmail]);
+    await sendEmail(subject, html, [user.email, supportEmail]);
 }
 
 const db = database();
@@ -54,7 +61,7 @@ const sendRoleChangeEmail = async (userId: string, roleId: string, action: "add"
 };
 
 export const makeUserSafe = (user:IUser):SafeUser =>
-    omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser;
+    user ? omit<IUser, "passwordHash">("passwordHash")(user) as SafeUser : undefined as any;
 
 export const User = {
     ...basicCrudService<IUser, NewUser, UserUpdate, SafeUser>("users", "userName", {
@@ -92,16 +99,17 @@ export const User = {
         }
     },
 
-    forgotLogin: async (email:string):Promise<any> => {
+    forgotLogin: async (rawEmail:string):Promise<any> => {
+        const email = rawEmail.trim();
         const user = await User.loadByInsensitive("email")(email);
         const supportEmail = await Setting.get("supportEmail");
         const subject = await Setting.get("forgotLoginSubject");
         const siteName = await Setting.get("siteName");
     
-        if(!user) {
+        if(!user || !user.userName) {
             // Send user not found email
             const html = render(UserNotFound, {email, siteName});
-            sendEmail(subject, html, [email, supportEmail]);
+            await sendEmail(subject, html, [email, supportEmail]);
         } else {
             // Generate a key for the reset password link
             const token = jwt.sign(
@@ -112,7 +120,7 @@ export const User = {
 
             // Get the forgot login template
             const html = render(ForgotLogin,  {email: user.email, userName: user.userName, token, siteName});
-            sendEmail(subject, html, [email, supportEmail]);
+            await sendEmail(subject, html, [email, supportEmail]);
         }
     },
 
@@ -128,7 +136,7 @@ export const User = {
         const passwordHash = await bcrypt.hash(newPassword, 10);
         await db("users")
             .update({passwordHash, hashAlgorithm: "bcrypt"})
-            .where({userName});
+            .whereRaw('LOWER("userName") = LOWER(?)', userName.trim());
     },
 
     resetPasswordByUser: async (userId:string, oldPassword:string, newPassword:string):Promise<any> => {
